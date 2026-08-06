@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;background:#F7F5F0;}
+    ::-webkit-scrollbar{width:8px;height:8px;}
+    ::-webkit-scrollbar-thumb{background:#DCD6C8;border-radius:4px;}
+    @keyframes drawerIn{from{transform:translateX(24px);opacity:0}to{transform:translateX(0);opacity:1}}
+  </style>
+</helmet>
+
+<div style="min-height:100vh;width:100%;font-family:'Public Sans',-apple-system,BlinkMacSystemFont,sans-serif;box-sizing:border-box;background:#F7F5F0;">
+
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+    <div style="min-height:100vh;display:flex;" data-screen-label="01 · Login">
+      <div style="flex:1;background:linear-gradient(160deg,#0F1F3A 0%,#0A1628 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;">
+        <div style="width:56px;height:1.5px;background:#C6A15B;margin-bottom:24px;"></div>
+        <div style="font:700 42px 'Playfair Display',serif;color:#FFFFFF;letter-spacing:2px;">ROTA 135</div>
+        <div style="font:700 14px 'Public Sans';color:#C6A15B;letter-spacing:3px;margin-top:12px;">PAINEL ADMINISTRATIVO</div>
+        <div style="width:56px;height:1.5px;background:#C6A15B;margin-top:24px;margin-bottom:28px;"></div>
+        <div style="font:400 14.5px/1.7 'Public Sans';color:rgba(255,255,255,0.55);text-align:center;max-width:340px;">Gestão de agendamentos, frota, cadastros e financeiro da rota Montes Claros – Belo Horizonte.</div>
+      </div>
+      <div style="width:460px;flex:none;background:#FFFFFF;display:flex;flex-direction:column;justify-content:center;padding:60px;box-sizing:border-box;">
+        <div style="font:700 26px 'Public Sans';color:#16223B;margin-bottom:6px;">Entrar</div>
+        <div style="font:400 14px 'Public Sans';color:#6B6459;margin-bottom:28px;">Acesse com sua conta corporativa.</div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <div style="font:700 12px 'Public Sans';color:#6B6459;letter-spacing:0.3px;margin-bottom:7px;">E-MAIL</div>
+            <input type="email" value="{{ loginEmail }}" onChange="{{ onLoginEmailChange }}" placeholder="voce@rota135.com.br" style="width:100%;height:50px;border-radius:10px;border:1.5px solid #E8E3D8;padding:0 16px;font:500 14.5px 'Public Sans';color:#16223B;outline:none;box-sizing:border-box;" />
+          </div>
+          <div>
+            <div style="font:700 12px 'Public Sans';color:#6B6459;letter-spacing:0.3px;margin-bottom:7px;">SENHA</div>
+            <input type="password" value="{{ loginPass }}" onChange="{{ onLoginPassChange }}" placeholder="••••••••" style="width:100%;height:50px;border-radius:10px;border:1.5px solid #E8E3D8;padding:0 16px;font:500 14.5px 'Public Sans';color:#16223B;outline:none;box-sizing:border-box;" />
+          </div>
+          <button onClick="{{ doLogin }}" disabled="{{ loginDisabled }}" style="{{ loginButtonStyle }}">Entrar no painel</button>
+          <div style="font:400 12.5px 'Public Sans';color:#9C9285;text-align:center;margin-top:6px;">Acesso por convite · Admin, Operador ou Financeiro</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ notLogin }}" hint-placeholder-val="{{ false }}">
+    <div style="min-height:100vh;display:flex;">
+
+      <div style="width:240px;flex:none;background:#0F1F3A;display:flex;flex-direction:column;min-height:100vh;">
+        <div style="padding:26px 24px 20px;">
+          <div style="font:700 21px 'Playfair Display',serif;color:#FFFFFF;letter-spacing:1px;">ROTA 135</div>
+          <div style="font:600 11px 'Public Sans';color:#C6A15B;letter-spacing:2px;margin-top:4px;">PAINEL ADMIN</div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px;padding:8px 12px;">
+          <button onClick="{{ navDashboard }}" style="{{ navDashboardStyle }}">
+            <div style="display:grid;grid-template-columns:6px 6px;grid-template-rows:6px 6px;gap:2px;flex:none;">
+              <div style="background:currentColor;border-radius:1px;"></div><div style="background:currentColor;border-radius:1px;"></div>
+              <div style="background:currentColor;border-radius:1px;"></div><div style="background:currentColor;border-radius:1px;"></div>
+            </div>
+            Dashboard
+          </button>
+
+          <sc-if value="{{ showAgendamentosNav }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ navAgendamentos }}" style="{{ navAgendamentosStyle }}">
+              <div style="display:flex;flex-direction:column;gap:3px;flex:none;width:16px;">
+                <div style="width:16px;height:2.5px;background:currentColor;border-radius:1px;"></div>
+                <div style="width:11px;height:2.5px;background:currentColor;border-radius:1px;"></div>
+                <div style="width:14px;height:2.5px;background:currentColor;border-radius:1px;"></div>
+              </div>
+              Agendamentos
+            </button>
+          </sc-if>
+
+          <sc-if value="{{ showFrotaNav }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ navFrota }}" style="{{ navFrotaStyle }}">
+              <div style="width:16px;height:16px;border-radius:3px;border:2px solid currentColor;position:relative;flex:none;"><div style="position:absolute;top:-2px;left:2px;width:2px;height:4px;background:currentColor;"></div><div style="position:absolute;top:-2px;right:2px;width:2px;height:4px;background:currentColor;"></div></div>
+              Frota
+            </button>
+          </sc-if>
+
+          <sc-if value="{{ showCadastroNav }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ navCadastro }}" style="{{ navCadastroStyle }}">
+              <div style="width:16px;height:16px;border-radius:50%;border:2px solid currentColor;flex:none;position:relative;"><div style="position:absolute;bottom:-6px;left:1px;width:10px;height:6px;border-radius:6px 6px 0 0;border:2px solid currentColor;border-bottom:none;"></div></div>
+              Cadastro
+            </button>
+          </sc-if>
+
+          <sc-if value="{{ showFinanceiroNav }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ navFinanceiro }}" style="{{ navFinanceiroStyle }}">
+              <div style="width:15px;height:15px;background:currentColor;transform:rotate(45deg);border-radius:3px;flex:none;"></div>
+              Financeiro
+            </button>
+          </sc-if>
+
+          <button onClick="{{ navRelatorios }}" style="{{ navRelatoriosStyle }}">
+            <div style="display:flex;align-items:flex-end;gap:2.5px;height:15px;flex:none;">
+              <div style="width:4px;height:7px;background:currentColor;border-radius:1px;"></div>
+              <div style="width:4px;height:12px;background:currentColor;border-radius:1px;"></div>
+              <div style="width:4px;height:15px;background:currentColor;border-radius:1px;"></div>
+            </div>
+            Relatórios
+          </button>
+        </div>
+
+        <div style="padding:16px;border-top:1px solid #2A3F66;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:#17294D;border:1.5px solid #C6A15B;display:flex;align-items:center;justify-content:center;font:700 13px 'Public Sans';color:#C6A15B;flex:none;">{{ userInitials }}</div>
+            <div style="min-width:0;">
+              <div style="font:700 13.5px 'Public Sans';color:#FFFFFF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ userName }}</div>
+              <div style="font:500 11.5px 'Public Sans';color:#9FB0CC;">{{ roleLabel }}</div>
+            </div>
+          </div>
+          <button onClick="{{ doLogout }}" style="width:100%;height:36px;border-radius:9px;border:1px solid #2A3F66;background:transparent;color:#9FB0CC;font:600 12.5px 'Public Sans';cursor:pointer;">Sair</button>
+        </div>
+      </div>
+
+      <div style="flex:1;display:flex;flex-direction:column;min-width:0;min-height:100vh;">
+
+        <div style="flex:none;height:76px;padding:0 32px;display:flex;align-items:center;justify-content:space-between;background:#FFFFFF;border-bottom:1px solid #E8E3D8;">
+          <div style="font:700 22px 'Playfair Display',serif;color:#16223B;">{{ pageTitle }}</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font:600 11.5px 'Public Sans';color:#9C9285;margin-right:2px;">VISUALIZANDO COMO</div>
+            <div style="display:flex;gap:4px;background:#EFEAE0;border-radius:10px;padding:4px;">
+              <button onClick="{{ setRoleAdmin }}" style="{{ roleAdminBtnStyle }}">Admin</button>
+              <button onClick="{{ setRoleOperador }}" style="{{ roleOperadorBtnStyle }}">Operador</button>
+              <button onClick="{{ setRoleFinanceiro }}" style="{{ roleFinanceiroBtnStyle }}">Financeiro</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:1;overflow-y:auto;padding:32px;min-height:0;">
+
+          <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="02 · Dashboard">
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:28px;">
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;padding:22px;">
+                  <div style="font:600 12.5px 'Public Sans';color:#6B6459;letter-spacing:0.2px;">CORRIDAS CONCLUÍDAS (SEMANA)</div>
+                  <div style="font:800 34px 'Public Sans';color:#16223B;margin-top:10px;">86</div>
+                  <div style="font:700 12.5px 'Public Sans';color:#5C8F72;margin-top:6px;">▲ 12% vs. semana anterior</div>
+                </div>
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;padding:22px;">
+                  <div style="font:600 12.5px 'Public Sans';color:#6B6459;letter-spacing:0.2px;">OCUPAÇÃO DA FROTA</div>
+                  <div style="font:800 34px 'Public Sans';color:#16223B;margin-top:10px;">78%</div>
+                  <div style="width:100%;height:6px;border-radius:3px;background:#EFEAE0;margin-top:12px;overflow:hidden;"><div style="width:78%;height:100%;background:#C6A15B;"></div></div>
+                </div>
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;padding:22px;">
+                  <div style="font:600 12.5px 'Public Sans';color:#6B6459;letter-spacing:0.2px;">TICKET MÉDIO</div>
+                  <div style="font:800 34px 'Public Sans';color:#16223B;margin-top:10px;">R$ 287</div>
+                  <div style="font:700 12.5px 'Public Sans';color:#5C8F72;margin-top:6px;">▲ 4% vs. mês anterior</div>
+                </div>
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;padding:22px;">
+                  <div style="font:600 12.5px 'Public Sans';color:#6B6459;letter-spacing:0.2px;">RECORRÊNCIA DE CLIENTES</div>
+                  <div style="font:800 34px 'Public Sans';color:#16223B;margin-top:10px;">64%</div>
+                  <div style="font:400 12.5px 'Public Sans';color:#9C9285;margin-top:6px;">dos clientes voltaram a agendar</div>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px;">
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;padding:24px;">
+                  <div style="font:700 15px 'Public Sans';color:#16223B;margin-bottom:20px;">Corridas por dia · últimos 7 dias</div>
+                  <div style="display:flex;align-items:flex-end;gap:14px;height:150px;">
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:62%;background:#F1E6CC;border-radius:6px 6px 0 0;"></div><div style="font:600 11.5px 'Public Sans';color:#9C9285;">Seg</div></div>
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:74%;background:#F1E6CC;border-radius:6px 6px 0 0;"></div><div style="font:600 11.5px 'Public Sans';color:#9C9285;">Ter</div></div>
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:55%;background:#F1E6CC;border-radius:6px 6px 0 0;"></div><div style="font:600 11.5px 'Public Sans';color:#9C9285;">Qua</div></div>
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:88%;background:#F1E6CC;border-radius:6px 6px 0 0;"></div><div style="font:600 11.5px 'Public Sans';color:#9C9285;">Qui</div></div>
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:100%;background:#C6A15B;border-radius:6px 6px 0 0;"></div><div style="font:700 11.5px 'Public Sans';color:#16223B;">Sex</div></div>
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:48%;background:#F1E6CC;border-radius:6px 6px 0 0;"></div><div style="font:600 11.5px 'Public Sans';color:#9C9285;">Sáb</div></div>
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:30%;background:#F1E6CC;border-radius:6px 6px 0 0;"></div><div style="font:600 11.5px 'Public Sans';color:#9C9285;">Dom</div></div>
+                  </div>
+                </div>
+
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;padding:24px;">
+                  <div style="font:700 15px 'Public Sans';color:#16223B;margin-bottom:16px;">Próximas corridas</div>
+                  <div style="display:flex;flex-direction:column;gap:14px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                      <div><div style="font:700 13.5px 'Public Sans';color:#16223B;">Dr. Eduardo Ramos</div><div style="font:400 12px 'Public Sans';color:#9C9285;margin-top:2px;">18 jul, 07:30</div></div>
+                      <div style="font:700 11px 'Public Sans';color:#9C7C3E;background:#F1E6CC;border-radius:20px;padding:4px 10px;">Aguardando</div>
+                    </div>
+                    <div style="height:1px;background:#E8E3D8;"></div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                      <div><div style="font:700 13.5px 'Public Sans';color:#16223B;">Sr. Ricardo Bittencourt</div><div style="font:400 12px 'Public Sans';color:#9C9285;margin-top:2px;">18 jul, 16:00</div></div>
+                      <div style="font:700 11px 'Public Sans';color:#5C8F72;background:#E3EEE7;border-radius:20px;padding:4px 10px;">Atribuída</div>
+                    </div>
+                    <div style="height:1px;background:#E8E3D8;"></div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                      <div><div style="font:700 13.5px 'Public Sans';color:#16223B;">Dra. Fernanda Lopes</div><div style="font:400 12px 'Public Sans';color:#9C9285;margin-top:2px;">19 jul, 08:00</div></div>
+                      <div style="font:700 11px 'Public Sans';color:#9C7C3E;background:#F1E6CC;border-radius:20px;padding:4px 10px;">Aguardando</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isAgendamentos }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="03 · Painel de agendamentos">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+                <div style="font:400 14px 'Public Sans';color:#6B6459;">{{ bookingsWaitingLabel }}</div>
+              </div>
+              <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;overflow:hidden;">
+                <div style="display:grid;grid-template-columns:1.6fr 1.3fr 1.6fr 1.2fr 1.6fr 1fr;padding:14px 22px;background:#FBF9F5;border-bottom:1px solid #E8E3D8;">
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;letter-spacing:0.3px;">CLIENTE</div>
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;letter-spacing:0.3px;">DATA/HORÁRIO</div>
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;letter-spacing:0.3px;">ROTA</div>
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;letter-spacing:0.3px;">STATUS</div>
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;letter-spacing:0.3px;">MOTORISTA / VEÍCULO</div>
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;letter-spacing:0.3px;">AÇÃO</div>
+                </div>
+                <sc-for list="{{ bookingRows }}" as="b" hint-placeholder-count="5">
+                  <div style="display:grid;grid-template-columns:1.6fr 1.3fr 1.6fr 1.2fr 1.6fr 1fr;padding:16px 22px;border-bottom:1px solid #F0EDE5;align-items:center;">
+                    <div style="font:700 13.5px 'Public Sans';color:#16223B;">{{ b.cliente }}</div>
+                    <div style="font:500 13px 'Public Sans';color:#6B6459;">{{ b.data }}</div>
+                    <div style="font:500 13px 'Public Sans';color:#6B6459;">{{ b.rota }}</div>
+                    <div><div style="{{ b.statusStyle }}">{{ b.statusLabel }}</div></div>
+                    <div style="font:500 12.5px 'Public Sans';color:#16223B;">{{ b.atribuicaoLabel }}</div>
+                    <div>
+                      <sc-if value="{{ b.canAssign }}" hint-placeholder-val="{{ true }}">
+                        <button onClick="{{ b.onAssign }}" style="background:#0F1F3A;color:#FFFFFF;border:none;border-radius:9px;padding:9px 14px;font:700 12.5px 'Public Sans';cursor:pointer;">Atribuir</button>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isFrota }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="04 · Calendário de disponibilidade da frota">
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+                <button onClick="{{ prevFrotaDay }}" style="width:36px;height:36px;border-radius:50%;border:1px solid #E8E3D8;background:#FFFFFF;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+                  <div style="width:8px;height:8px;border-left:2px solid #16223B;border-bottom:2px solid #16223B;transform:rotate(45deg);margin-left:2px;"></div>
+                </button>
+                <div style="font:700 16px 'Public Sans';color:#16223B;min-width:200px;text-align:center;">{{ frotaDayLabel }}</div>
+                <button onClick="{{ nextFrotaDay }}" style="width:36px;height:36px;border-radius:50%;border:1px solid #E8E3D8;background:#FFFFFF;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+                  <div style="width:8px;height:8px;border-right:2px solid #16223B;border-top:2px solid #16223B;transform:rotate(45deg);margin-right:2px;"></div>
+                </button>
+              </div>
+
+              <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;padding:22px;">
+                <div style="display:grid;grid-template-columns:220px repeat(4,1fr);gap:0 8px;margin-bottom:10px;">
+                  <div></div>
+                  <div style="font:700 11.5px 'Public Sans';color:#9C9285;text-align:center;">06H</div>
+                  <div style="font:700 11.5px 'Public Sans';color:#9C9285;text-align:center;">11H</div>
+                  <div style="font:700 11.5px 'Public Sans';color:#9C9285;text-align:center;">16H</div>
+                  <div style="font:700 11.5px 'Public Sans';color:#9C9285;text-align:center;">22H</div>
+                </div>
+                <sc-for list="{{ frotaRows }}" as="row" hint-placeholder-count="5">
+                  <div style="display:grid;grid-template-columns:220px 1fr;gap:0 8px;align-items:center;padding:12px 0;border-top:1px solid #F0EDE5;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div style="width:34px;height:34px;border-radius:50%;background:#F1E6CC;display:flex;align-items:center;justify-content:center;font:700 12px 'Public Sans';color:#9C7C3E;flex:none;">{{ row.initials }}</div>
+                      <div>
+                        <div style="font:700 13.5px 'Public Sans';color:#16223B;">{{ row.nome }}</div>
+                        <div style="font:400 11.5px 'Public Sans';color:#9C9285;">{{ row.veiculo }}</div>
+                      </div>
+                    </div>
+                    <div style="position:relative;height:30px;background:#FBF9F5;border-radius:8px;">
+                      <div style="{{ row.blockStyle }}">{{ row.blockLabel }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isCadastro }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="05 · Cadastro">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+                <div style="display:flex;gap:4px;background:#EFEAE0;border-radius:10px;padding:4px;">
+                  <button onClick="{{ setCadastroTabMotoristas }}" style="{{ tabMotoristasStyle }}">Motoristas</button>
+                  <button onClick="{{ setCadastroTabVeiculos }}" style="{{ tabVeiculosStyle }}">Veículos</button>
+                  <button onClick="{{ setCadastroTabClientes }}" style="{{ tabClientesStyle }}">Clientes</button>
+                </div>
+                <button onClick="{{ openNewRecord }}" style="background:#C6A15B;color:#16223B;border:none;border-radius:10px;padding:12px 20px;font:700 13.5px 'Public Sans';cursor:pointer;">+ Novo</button>
+              </div>
+
+              <sc-if value="{{ isTabMotoristas }}" hint-placeholder-val="{{ true }}">
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;overflow:hidden;">
+                  <div style="display:grid;grid-template-columns:1.6fr 1.4fr 1.3fr 1fr;padding:14px 22px;background:#FBF9F5;border-bottom:1px solid #E8E3D8;">
+                    <div style="font:700 12px 'Public Sans';color:#9C9285;">NOME</div>
+                    <div style="font:700 12px 'Public Sans';color:#9C9285;">CNH</div>
+                    <div style="font:700 12px 'Public Sans';color:#9C9285;">TELEFONE</div>
+                    <div style="font:700 12px 'Public Sans';color:#9C9285;">STATUS</div>
+                  </div>
+                  <sc-for list="{{ motoristasRows }}" as="m" hint-placeholder-count="5">
+                    <div style="display:grid;grid-template-columns:1.6fr 1.4fr 1.3fr 1fr;padding:16px 22px;border-bottom:1px solid #F0EDE5;align-items:center;">
+                      <div style="font:700 13.5px 'Public Sans';color:#16223B;">{{ m.nome }}</div>
+                      <div style="font:500 13px 'Public Sans';color:#6B6459;">{{ m.cnh }}</div>
+                      <div style="font:500 13px 'Public Sans';color:#6B6459;">{{ m.telefone }}</div>
+                      <div><div style="{{ m.statusStyle }}">{{ m.status }}</div></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isTabVeiculos }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;overflow:hidden;">
+                  <div style="display:grid;grid-template-columns:1.6fr 1fr 1.6fr 0.8fr;padding:14px 22px;background:#FBF9F5;border-bottom:1px solid #E8E3D8;">
+                    <div style="font:700 12px 'Public Sans';color:#9C9285;">MODELO</div>
+                    <div style="font:700 12px 'Public Sans';color:#9C9285;">PLACA</div>
+                    <div style="font:700 12px 'Public Sans';color:#9C9285;">CATEGORIA</div>
+                    <div style="font:700 12px 'Public Sans';color:#9C9285;">ANO</div>
+                  </div>
+                  <sc-for list="{{ veiculosRows }}" as="v" hint-placeholder-count="4">
+                    <div style="display:grid;grid-template-columns:1.6fr 1fr 1.6fr 0.8fr;padding:16px 22px;border-bottom:1px solid #F0EDE5;align-items:center;">
+                      <div style="font:700 13.5px 'Public Sans';color:#16223B;">{{ v.modelo }}</div>
+                      <div style="font:500 13px 'Public Sans';color:#6B6459;">{{ v.placa }}</div>
+                      <div style="font:500 13px 'Public Sans';color:#6B6459;">{{ v.categoria }}</div>
+                      <div style="font:500 13px 'Public Sans';color:#6B6459;">{{ v.ano }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isTabClientes }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;overflow:hidden;">
+                  <div style="display:grid;grid-template-columns:1.6fr 1.6fr 1.2fr 0.8fr;padding:14px 22px;background:#FBF9F5;border-bottom:1px solid #E8E3D8;">
+                    <div style="font:700 12px 'Public Sans';color:#9C9285;">NOME</div>
+                    <div style="font:700 12px 'Public Sans';color:#9C9285;">EMPRESA</div>
+                    <div style="font:700 12px 'Public Sans';color:#9C9285;">TELEFONE</div>
+                    <div style="font:700 12px 'Public Sans';color:#9C9285;">VIAGENS</div>
+                  </div>
+                  <sc-for list="{{ clientesRows }}" as="c" hint-placeholder-count="4">
+                    <div style="display:grid;grid-template-columns:1.6fr 1.6fr 1.2fr 0.8fr;padding:16px 22px;border-bottom:1px solid #F0EDE5;align-items:center;">
+                      <div style="font:700 13.5px 'Public Sans';color:#16223B;">{{ c.nome }}</div>
+                      <div style="font:500 13px 'Public Sans';color:#6B6459;">{{ c.empresa }}</div>
+                      <div style="font:500 13px 'Public Sans';color:#6B6459;">{{ c.telefone }}</div>
+                      <div style="font:700 13px 'Public Sans';color:#16223B;">{{ c.viagens }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isFinanceiro }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="06 · Financeiro">
+              <div style="display:flex;justify-content:flex-end;margin-bottom:18px;">
+                <div style="display:flex;gap:4px;background:#EFEAE0;border-radius:10px;padding:4px;">
+                  <button onClick="{{ setPeriodoSemana }}" style="{{ periodoSemanaStyle }}">Esta semana</button>
+                  <button onClick="{{ setPeriodoMes }}" style="{{ periodoMesStyle }}">Este mês</button>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px;">
+                <div style="background:#0F1F3A;border-radius:18px;padding:22px;">
+                  <div style="font:600 12.5px 'Public Sans';color:#9FB0CC;letter-spacing:0.2px;">FATURAMENTO TOTAL</div>
+                  <div style="font:800 30px 'Public Sans';color:#FFFFFF;margin-top:10px;">R$ 16.600,00</div>
+                </div>
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;padding:22px;">
+                  <div style="font:600 12.5px 'Public Sans';color:#6B6459;letter-spacing:0.2px;">REPASSES A MOTORISTAS</div>
+                  <div style="font:800 30px 'Public Sans';color:#16223B;margin-top:10px;">R$ 14.110,00</div>
+                </div>
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;padding:22px;">
+                  <div style="font:600 12.5px 'Public Sans';color:#6B6459;letter-spacing:0.2px;">MARGEM DA PLATAFORMA</div>
+                  <div style="font:800 30px 'Public Sans';color:#9C7C3E;margin-top:10px;">R$ 2.490,00</div>
+                </div>
+              </div>
+
+              <div style="font:700 15px 'Public Sans';color:#16223B;margin-bottom:12px;">Repasses por motorista</div>
+              <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;overflow:hidden;">
+                <div style="display:grid;grid-template-columns:1.6fr 1fr 1.2fr 1.2fr 1.2fr 1fr;padding:14px 22px;background:#FBF9F5;border-bottom:1px solid #E8E3D8;">
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;">MOTORISTA</div>
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;">CORRIDAS</div>
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;">BRUTO</div>
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;">TAXA</div>
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;">LÍQUIDO</div>
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;">STATUS</div>
+                </div>
+                <sc-for list="{{ repassesRows }}" as="r" hint-placeholder-count="4">
+                  <div style="display:grid;grid-template-columns:1.6fr 1fr 1.2fr 1.2fr 1.2fr 1fr;padding:16px 22px;border-bottom:1px solid #F0EDE5;align-items:center;">
+                    <div style="font:700 13.5px 'Public Sans';color:#16223B;">{{ r.motorista }}</div>
+                    <div style="font:500 13px 'Public Sans';color:#6B6459;">{{ r.corridas }}</div>
+                    <div style="font:500 13px 'Public Sans';color:#6B6459;">{{ r.brutoLabel }}</div>
+                    <div style="font:500 13px 'Public Sans';color:#6B6459;">{{ r.taxaLabel }}</div>
+                    <div style="font:700 13px 'Public Sans';color:#16223B;">{{ r.liquidoLabel }}</div>
+                    <div><div style="{{ r.statusStyle }}">{{ r.status }}</div></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isRelatorios }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="07 · Relatórios">
+              <div style="display:flex;justify-content:flex-end;margin-bottom:18px;">
+                <div style="display:flex;gap:4px;background:#EFEAE0;border-radius:10px;padding:4px;">
+                  <button onClick="{{ setRelatorioSemana }}" style="{{ relatorioSemanaStyle }}">Últimas 6 semanas</button>
+                  <button onClick="{{ setRelatorioMes }}" style="{{ relatorioMesStyle }}">Últimos 6 meses</button>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px;margin-bottom:20px;">
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;padding:24px;">
+                  <div style="font:700 15px 'Public Sans';color:#16223B;margin-bottom:20px;">Corridas por período</div>
+                  <div style="display:flex;align-items:flex-end;gap:16px;height:150px;">
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:52%;background:#F1E6CC;border-radius:6px 6px 0 0;"></div><div style="font:600 11.5px 'Public Sans';color:#9C9285;">S1</div></div>
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:64%;background:#F1E6CC;border-radius:6px 6px 0 0;"></div><div style="font:600 11.5px 'Public Sans';color:#9C9285;">S2</div></div>
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:70%;background:#F1E6CC;border-radius:6px 6px 0 0;"></div><div style="font:600 11.5px 'Public Sans';color:#9C9285;">S3</div></div>
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:80%;background:#F1E6CC;border-radius:6px 6px 0 0;"></div><div style="font:600 11.5px 'Public Sans';color:#9C9285;">S4</div></div>
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:92%;background:#F1E6CC;border-radius:6px 6px 0 0;"></div><div style="font:600 11.5px 'Public Sans';color:#9C9285;">S5</div></div>
+                    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;"><div style="width:100%;height:100%;background:#C6A15B;border-radius:6px 6px 0 0;"></div><div style="font:700 11.5px 'Public Sans';color:#16223B;">S6</div></div>
+                  </div>
+                </div>
+
+                <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                  <div style="font:700 15px 'Public Sans';color:#16223B;align-self:flex-start;margin-bottom:16px;">Ocupação da frota</div>
+                  <div style="width:140px;height:140px;border-radius:50%;background:conic-gradient(#C6A15B 0deg 281deg,#EFEAE0 281deg 360deg);display:flex;align-items:center;justify-content:center;">
+                    <div style="width:104px;height:104px;border-radius:50%;background:#FFFFFF;display:flex;align-items:center;justify-content:center;font:800 26px 'Public Sans';color:#16223B;">78%</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:18px;overflow:hidden;">
+                <div style="display:grid;grid-template-columns:1.8fr 1fr 1fr;padding:14px 22px;background:#FBF9F5;border-bottom:1px solid #E8E3D8;">
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;">CATEGORIA DE VEÍCULO</div>
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;">CORRIDAS</div>
+                  <div style="font:700 12px 'Public Sans';color:#9C9285;">TICKET MÉDIO</div>
+                </div>
+                <div style="display:grid;grid-template-columns:1.8fr 1fr 1fr;padding:16px 22px;border-bottom:1px solid #F0EDE5;align-items:center;">
+                  <div style="font:700 13.5px 'Public Sans';color:#16223B;">Executivo Sedan</div>
+                  <div style="font:500 13px 'Public Sans';color:#6B6459;">142</div>
+                  <div style="font:700 13px 'Public Sans';color:#16223B;">R$ 249</div>
+                </div>
+                <div style="display:grid;grid-template-columns:1.8fr 1fr 1fr;padding:16px 22px;border-bottom:1px solid #F0EDE5;align-items:center;">
+                  <div style="font:700 13.5px 'Public Sans';color:#16223B;">Executivo SUV Plus</div>
+                  <div style="font:500 13px 'Public Sans';color:#6B6459;">64</div>
+                  <div style="font:700 13px 'Public Sans';color:#16223B;">R$ 329</div>
+                </div>
+                <div style="display:grid;grid-template-columns:1.8fr 1fr 1fr;padding:16px 22px;align-items:center;">
+                  <div style="font:700 13.5px 'Public Sans';color:#16223B;">Blindado Executivo</div>
+                  <div style="font:500 13px 'Public Sans';color:#6B6459;">18</div>
+                  <div style="font:700 13px 'Public Sans';color:#16223B;">R$ 459</div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ assignOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(15,25,45,0.45);display:flex;justify-content:flex-end;z-index:40;">
+      <div style="width:420px;background:#F7F5F0;height:100vh;padding:28px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box;animation:drawerIn 0.2s ease;overflow-y:auto;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font:700 20px 'Playfair Display',serif;color:#16223B;">Atribuir motorista</div>
+          <button onClick="{{ closeAssign }}" style="width:32px;height:32px;border-radius:50%;border:1px solid #E8E3D8;background:#FFFFFF;cursor:pointer;color:#16223B;">✕</button>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #E8E3D8;border-radius:14px;padding:16px 18px;">
+          <div style="font:700 14.5px 'Public Sans';color:#16223B;">{{ assignBookingCliente }}</div>
+          <div style="font:400 13px 'Public Sans';color:#6B6459;margin-top:4px;">{{ assignBookingData }} · {{ assignBookingRota }}</div>
+        </div>
+        <div>
+          <div style="font:700 12px 'Public Sans';color:#6B6459;letter-spacing:0.3px;margin-bottom:7px;">MOTORISTA</div>
+          <select value="{{ assignDriver }}" onChange="{{ onAssignDriverChange }}" style="width:100%;height:48px;border-radius:10px;border:1.5px solid #E8E3D8;padding:0 14px;font:600 14px 'Public Sans';color:#16223B;background:#FFFFFF;box-sizing:border-box;">
+            <option value="">Selecione um motorista</option>
+            <sc-for list="{{ driverOptions }}" as="d" hint-placeholder-count="4">
+              <option value="{{ d }}">{{ d }}</option>
+            </sc-for>
+          </select>
+        </div>
+        <div>
+          <div style="font:700 12px 'Public Sans';color:#6B6459;letter-spacing:0.3px;margin-bottom:7px;">VEÍCULO</div>
+          <select value="{{ assignVehicle }}" onChange="{{ onAssignVehicleChange }}" style="width:100%;height:48px;border-radius:10px;border:1.5px solid #E8E3D8;padding:0 14px;font:600 14px 'Public Sans';color:#16223B;background:#FFFFFF;box-sizing:border-box;">
+            <option value="">Selecione um veículo</option>
+            <sc-for list="{{ vehicleOptions }}" as="v" hint-placeholder-count="4">
+              <option value="{{ v }}">{{ v }}</option>
+            </sc-for>
+          </select>
+        </div>
+        <button onClick="{{ confirmAssign }}" disabled="{{ assignDisabled }}" style="{{ assignButtonStyle }}">Confirmar atribuição</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ cadastroDrawerOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(15,25,45,0.45);display:flex;justify-content:flex-end;z-index:40;">
+      <div style="width:420px;background:#F7F5F0;height:100vh;padding:28px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box;animation:drawerIn 0.2s ease;overflow-y:auto;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font:700 20px 'Playfair Display',serif;color:#16223B;">{{ newRecordTitle }}</div>
+          <button onClick="{{ closeNewRecord }}" style="width:32px;height:32px;border-radius:50%;border:1px solid #E8E3D8;background:#FFFFFF;cursor:pointer;color:#16223B;">✕</button>
+        </div>
+        <div>
+          <div style="font:700 12px 'Public Sans';color:#6B6459;letter-spacing:0.3px;margin-bottom:7px;">{{ field1Label }}</div>
+          <input type="text" value="{{ newF1 }}" onChange="{{ onNewF1Change }}" style="width:100%;height:48px;border-radius:10px;border:1.5px solid #E8E3D8;padding:0 14px;font:500 14px 'Public Sans';color:#16223B;box-sizing:border-box;" />
+        </div>
+        <div>
+          <div style="font:700 12px 'Public Sans';color:#6B6459;letter-spacing:0.3px;margin-bottom:7px;">{{ field2Label }}</div>
+          <input type="text" value="{{ newF2 }}" onChange="{{ onNewF2Change }}" style="width:100%;height:48px;border-radius:10px;border:1.5px solid #E8E3D8;padding:0 14px;font:500 14px 'Public Sans';color:#16223B;box-sizing:border-box;" />
+        </div>
+        <div>
+          <div style="font:700 12px 'Public Sans';color:#6B6459;letter-spacing:0.3px;margin-bottom:7px;">{{ field3Label }}</div>
+          <input type="text" value="{{ newF3 }}" onChange="{{ onNewF3Change }}" style="width:100%;height:48px;border-radius:10px;border:1.5px solid #E8E3D8;padding:0 14px;font:500 14px 'Public Sans';color:#16223B;box-sizing:border-box;" />
+        </div>
+        <div>
+          <div style="font:700 12px 'Public Sans';color:#6B6459;letter-spacing:0.3px;margin-bottom:7px;">{{ field4Label }}</div>
+          <input type="text" value="{{ newF4 }}" onChange="{{ onNewF4Change }}" style="width:100%;height:48px;border-radius:10px;border:1.5px solid #E8E3D8;padding:0 14px;font:500 14px 'Public Sans';color:#16223B;box-sizing:border-box;" />
+        </div>
+        <button onClick="{{ saveNewRecord }}" disabled="{{ newRecordDisabled }}" style="{{ newRecordButtonStyle }}">Salvar cadastro</button>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+function fmtBRL(n) {
+  return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+const NAV_ACTIVE = "display:flex;align-items:center;gap:12px;height:44px;padding:0 14px;border-radius:10px;border:none;background:#17294D;color:#C6A15B;font:700 13.5px 'Public Sans';cursor:pointer;text-align:left;";
+const NAV_INACTIVE = "display:flex;align-items:center;gap:12px;height:44px;padding:0 14px;border-radius:10px;border:none;background:transparent;color:#9FB0CC;font:600 13.5px 'Public Sans';cursor:pointer;text-align:left;";
+
+const SEG_ACTIVE = "height:36px;padding:0 16px;border-radius:8px;border:none;background:#FFFFFF;color:#16223B;font:700 12.5px 'Public Sans';box-shadow:0 1px 4px rgba(15,25,45,0.1);cursor:pointer;";
+const SEG_INACTIVE = "height:36px;padding:0 16px;border-radius:8px;border:none;background:transparent;color:#9C9285;font:600 12.5px 'Public Sans';cursor:pointer;";
+
+function pillStyle(kind) {
+  const base = "display:inline-block;font:700 11px 'Public Sans';border-radius:20px;padding:5px 12px;";
+  if (kind === 'gold') return base + "color:#9C7C3E;background:#F1E6CC;";
+  if (kind === 'sage') return base + "color:#5C8F72;background:#E3EEE7;";
+  return base + "color:#6B6459;background:#EFEAE0;";
+}
+
+class Component extends DCLogic {
+  state = {
+    screen: 'login',
+    role: 'admin',
+    loginEmail: '',
+    loginPass: '',
+    cadastroTab: 'motoristas',
+    frotaDayIndex: 0,
+    periodoFinanceiro: 'mes',
+    periodoRelatorio: 'semana',
+
+    bookings: [
+      { id: 1, cliente: 'Dr. Eduardo Ramos', data: '18 jul, 07:30', rota: 'Montes Claros → BH', status: 'aguardando', motorista: null, veiculo: null },
+      { id: 2, cliente: 'Dra. Camila Nogueira', data: '18 jul, 11:15', rota: 'Montes Claros → BH', status: 'aguardando', motorista: null, veiculo: null },
+      { id: 3, cliente: 'Sr. Ricardo Bittencourt', data: '18 jul, 16:00', rota: 'BH → Montes Claros', status: 'atribuida', motorista: 'Carlos Menezes', veiculo: 'BMW Série 5 · MOC2A34' },
+      { id: 4, cliente: 'Dra. Fernanda Lopes', data: '19 jul, 08:00', rota: 'Montes Claros → BH', status: 'aguardando', motorista: null, veiculo: null },
+      { id: 5, cliente: 'Sr. André Salomão', data: '19 jul, 14:30', rota: 'Montes Claros → BH', status: 'atribuida', motorista: 'Paulo Siqueira', veiculo: 'Volvo XC90 · MOC4B12' }
+    ],
+    motoristas: [
+      { nome: 'Carlos Menezes', cnh: 'MG-1234567-B', telefone: '(38) 99123-0001', status: 'Ativo' },
+      { nome: 'Paulo Siqueira', cnh: 'MG-2345678-B', telefone: '(38) 99123-0002', status: 'Ativo' },
+      { nome: 'Marcos Vidal', cnh: 'MG-3456789-B', telefone: '(31) 99123-0003', status: 'Ativo' },
+      { nome: 'Juliana Prado', cnh: 'MG-4567890-B', telefone: '(31) 99123-0004', status: 'Férias' },
+      { nome: 'Ricardo Fontes', cnh: 'MG-5678901-B', telefone: '(38) 99123-0005', status: 'Ativo' }
+    ],
+    veiculos: [
+      { modelo: 'BMW Série 5', placa: 'MOC2A34', categoria: 'Executivo Sedan', ano: 2024 },
+      { modelo: 'Volvo XC90', placa: 'MOC4B12', categoria: 'Executivo SUV Plus', ano: 2023 },
+      { modelo: 'Mercedes Classe E', placa: 'MOC7C89', categoria: 'Executivo Sedan', ano: 2025 },
+      { modelo: 'Land Rover Defender', placa: 'MOC1D45', categoria: 'Blindado Executivo', ano: 2024 }
+    ],
+    clientes: [
+      { nome: 'Dr. Eduardo Ramos', empresa: 'Clínica Ramos & Associados', telefone: '(38) 99123-4501', viagens: 14 },
+      { nome: 'Dra. Camila Nogueira', empresa: 'Hospital Clemente de Faria', telefone: '(38) 99876-2210', viagens: 9 },
+      { nome: 'Sr. Ricardo Bittencourt', empresa: 'Bittencourt Empreendimentos', telefone: '(31) 99654-8890', viagens: 22 },
+      { nome: 'Dra. Fernanda Lopes', empresa: 'Lopes Advocacia', telefone: '(38) 99555-1290', viagens: 5 }
+    ],
+
+    assignOpen: false,
+    assignBookingId: null,
+    assignDriver: '',
+    assignVehicle: '',
+
+    cadastroDrawerOpen: false,
+    newF1: '', newF2: '', newF3: '', newF4: ''
+  };
+
+  driverOptions = ['Carlos Menezes', 'Paulo Siqueira', 'Marcos Vidal', 'Juliana Prado', 'Ricardo Fontes'];
+  vehicleOptions = ['BMW Série 5 · MOC2A34', 'Volvo XC90 · MOC4B12', 'Mercedes Classe E · MOC7C89', 'Land Rover Defender · MOC1D45 (Blindado)'];
+
+  repasses = [
+    { motorista: 'Carlos Menezes', corridas: 18, bruto: 5820, taxa: 873, liquido: 4947, status: 'Pago' },
+    { motorista: 'Paulo Siqueira', corridas: 15, bruto: 4850, taxa: 727.5, liquido: 4122.5, status: 'Pago' },
+    { motorista: 'Marcos Vidal', corridas: 12, bruto: 3990, taxa: 598.5, liquido: 3391.5, status: 'Pendente' },
+    { motorista: 'Juliana Prado', corridas: 6, bruto: 1940, taxa: 291, liquido: 1649, status: 'Pendente' }
+  ];
+
+  frotaDays = [
+    {
+      label: 'Hoje · 18 jul',
+      rows: [
+        { initials: 'CM', nome: 'Carlos Menezes', veiculo: 'BMW Série 5', left: 5, width: 22, label: '07:30 · Ramos' },
+        { initials: 'PS', nome: 'Paulo Siqueira', veiculo: 'Volvo XC90', left: 55, width: 20, label: '14:30 · Salomão' },
+        { initials: 'MV', nome: 'Marcos Vidal', veiculo: 'Mercedes Classe E', left: 0, width: 0, label: '' },
+        { initials: 'JP', nome: 'Juliana Prado', veiculo: 'Land Rover Defender', left: 0, width: 100, label: 'Férias' },
+        { initials: 'RF', nome: 'Ricardo Fontes', veiculo: 'BMW Série 5 (reserva)', left: 65, width: 24, label: '16:00 · Bittencourt' }
+      ]
+    },
+    {
+      label: 'Amanhã · 19 jul',
+      rows: [
+        { initials: 'CM', nome: 'Carlos Menezes', veiculo: 'BMW Série 5', left: 8, width: 18, label: '08:00 · Lopes' },
+        { initials: 'PS', nome: 'Paulo Siqueira', veiculo: 'Volvo XC90', left: 0, width: 0, label: '' },
+        { initials: 'MV', nome: 'Marcos Vidal', veiculo: 'Mercedes Classe E', left: 40, width: 20, label: '13:00 · Novo cliente' },
+        { initials: 'JP', nome: 'Juliana Prado', veiculo: 'Land Rover Defender', left: 0, width: 100, label: 'Férias' },
+        { initials: 'RF', nome: 'Ricardo Fontes', veiculo: 'BMW Série 5 (reserva)', left: 0, width: 0, label: '' }
+      ]
+    }
+  ];
+
+  onLoginEmailChange = (e) => this.setState({ loginEmail: e.target.value });
+  onLoginPassChange = (e) => this.setState({ loginPass: e.target.value });
+  doLogin = () => this.setState({ screen: 'dashboard' });
+  doLogout = () => this.setState({ screen: 'login', loginEmail: '', loginPass: '' });
+
+  navTo = (screen) => this.setState({ screen });
+  navDashboard = () => this.navTo('dashboard');
+  navAgendamentos = () => this.navTo('agendamentos');
+  navFrota = () => this.navTo('frota');
+  navCadastro = () => this.navTo('cadastro');
+  navFinanceiro = () => this.navTo('financeiro');
+  navRelatorios = () => this.navTo('relatorios');
+
+  setRole = (role) => {
+    const allowed = {
+      admin: ['dashboard', 'agendamentos', 'frota', 'cadastro', 'financeiro', 'relatorios'],
+      operador: ['dashboard', 'agendamentos', 'frota', 'cadastro', 'relatorios'],
+      financeiro: ['dashboard', 'financeiro', 'relatorios']
+    }[role];
+    this.setState((s) => ({ role, screen: allowed.includes(s.screen) ? s.screen : 'dashboard' }));
+  };
+  setRoleAdmin = () => this.setRole('admin');
+  setRoleOperador = () => this.setRole('operador');
+  setRoleFinanceiro = () => this.setRole('financeiro');
+
+  openAssign = (id) => this.setState({ assignOpen: true, assignBookingId: id, assignDriver: '', assignVehicle: '' });
+  closeAssign = () => this.setState({ assignOpen: false });
+  onAssignDriverChange = (e) => this.setState({ assignDriver: e.target.value });
+  onAssignVehicleChange = (e) => this.setState({ assignVehicle: e.target.value });
+  confirmAssign = () => this.setState((s) => ({
+    assignOpen: false,
+    bookings: s.bookings.map((b) => b.id === s.assignBookingId ? { ...b, status: 'atribuida', motorista: s.assignDriver, veiculo: s.assignVehicle } : b)
+  }));
+
+  setCadastroTab = (tab) => this.setState({ cadastroTab: tab });
+  setCadastroTabMotoristas = () => this.setCadastroTab('motoristas');
+  setCadastroTabVeiculos = () => this.setCadastroTab('veiculos');
+  setCadastroTabClientes = () => this.setCadastroTab('clientes');
+
+  openNewRecord = () => this.setState({ cadastroDrawerOpen: true, newF1: '', newF2: '', newF3: '', newF4: '' });
+  closeNewRecord = () => this.setState({ cadastroDrawerOpen: false });
+  onNewF1Change = (e) => this.setState({ newF1: e.target.value });
+  onNewF2Change = (e) => this.setState({ newF2: e.target.value });
+  onNewF3Change = (e) => this.setState({ newF3: e.target.value });
+  onNewF4Change = (e) => this.setState({ newF4: e.target.value });
+  saveNewRecord = () => this.setState((s) => {
+    if (s.cadastroTab === 'motoristas') {
+      return { cadastroDrawerOpen: false, motoristas: [...s.motoristas, { nome: s.newF1, cnh: s.newF2, telefone: s.newF3, status: s.newF4 || 'Ativo' }] };
+    }
+    if (s.cadastroTab === 'veiculos') {
+      return { cadastroDrawerOpen: false, veiculos: [...s.veiculos, { modelo: s.newF1, placa: s.newF2, categoria: s.newF3, ano: s.newF4 }] };
+    }
+    return { cadastroDrawerOpen: false, clientes: [...s.clientes, { nome: s.newF1, empresa: s.newF2, telefone: s.newF3, viagens: 0 }] };
+  });
+
+  prevFrotaDay = () => this.setState((s) => ({ frotaDayIndex: Math.max(0, s.frotaDayIndex - 1) }));
+  nextFrotaDay = () => this.setState((s) => ({ frotaDayIndex: Math.min(this.frotaDays.length - 1, s.frotaDayIndex + 1) }));
+
+  setPeriodoFinanceiro = (p) => this.setState({ periodoFinanceiro: p });
+  setPeriodoSemana = () => this.setPeriodoFinanceiro('semana');
+  setPeriodoMes = () => this.setPeriodoFinanceiro('mes');
+  setPeriodoRelatorio = (p) => this.setState({ periodoRelatorio: p });
+  setRelatorioSemana = () => this.setPeriodoRelatorio('semana');
+  setRelatorioMes = () => this.setPeriodoRelatorio('mes');
+
+  renderVals() {
+    const s = this.state;
+    const allowedByRole = {
+      admin: ['dashboard', 'agendamentos', 'frota', 'cadastro', 'financeiro', 'relatorios'],
+      operador: ['dashboard', 'agendamentos', 'frota', 'cadastro', 'relatorios'],
+      financeiro: ['dashboard', 'financeiro', 'relatorios']
+    }[s.role];
+
+    const titles = {
+      dashboard: 'Dashboard', agendamentos: 'Painel de agendamentos', frota: 'Disponibilidade da frota',
+      cadastro: 'Cadastro', financeiro: 'Financeiro', relatorios: 'Relatórios'
+    };
+
+    const roleLabels = { admin: 'Admin', operador: 'Operador', financeiro: 'Financeiro' };
+    const roleNames = { admin: 'Beatriz Andrade', operador: 'Thiago Marins', financeiro: 'Renata Cunha' };
+
+    const bookingRows = s.bookings.map((b) => ({
+      cliente: b.cliente, data: b.data, rota: b.rota,
+      statusStyle: pillStyle(b.status === 'atribuida' ? 'sage' : 'gold'),
+      statusLabel: b.status === 'atribuida' ? 'Atribuída' : 'Aguardando atribuição',
+      atribuicaoLabel: b.motorista ? (b.motorista + ' · ' + b.veiculo) : '—',
+      canAssign: b.status !== 'atribuida',
+      onAssign: () => this.openAssign(b.id)
+    }));
+    const waitingCount = s.bookings.filter((b) => b.status !== 'atribuida').length;
+
+    const assignBooking = s.bookings.find((b) => b.id === s.assignBookingId);
+
+    const motoristasRows = s.motoristas.map((m) => ({
+      nome: m.nome, cnh: m.cnh, telefone: m.telefone, status: m.status,
+      statusStyle: pillStyle(m.status === 'Ativo' ? 'sage' : 'gold')
+    }));
+
+    const frotaDay = this.frotaDays[Math.min(s.frotaDayIndex, this.frotaDays.length - 1)];
+    const frotaRows = frotaDay.rows.map((row) => ({
+      initials: row.initials, nome: row.nome, veiculo: row.veiculo,
+      blockLabel: row.label,
+      blockStyle: row.width > 0
+        ? ("position:absolute;top:3px;bottom:3px;left:" + row.left + "%;width:" + row.width + "%;background:" + (row.label === 'Férias' ? '#E8E3D8' : '#C6A15B') + ";border-radius:6px;display:flex;align-items:center;justify-content:center;font:700 11px 'Public Sans';color:" + (row.label === 'Férias' ? '#6B6459' : '#16223B') + ";padding:0 8px;white-space:nowrap;overflow:hidden;")
+        : "display:none;"
+    }));
+
+    const newRecordTitles = { motoristas: 'Novo motorista', veiculos: 'Novo veículo', clientes: 'Novo cliente' };
+    const fieldLabels = {
+      motoristas: ['NOME COMPLETO', 'CNH', 'TELEFONE', 'STATUS'],
+      veiculos: ['MODELO', 'PLACA', 'CATEGORIA', 'ANO'],
+      clientes: ['NOME', 'EMPRESA', 'TELEFONE', 'E-MAIL']
+    }[s.cadastroTab];
+    const newRecordDisabled = !(s.newF1.trim() && s.newF2.trim());
+
+    const loginDisabled = !(s.loginEmail.includes('@') && s.loginPass.length > 3);
+
+    return {
+      isLogin: s.screen === 'login',
+      notLogin: s.screen !== 'login',
+      loginEmail: s.loginEmail,
+      loginPass: s.loginPass,
+      onLoginEmailChange: this.onLoginEmailChange,
+      onLoginPassChange: this.onLoginPassChange,
+      doLogin: this.doLogin,
+      doLogout: this.doLogout,
+      loginDisabled,
+      loginButtonStyle: "width:100%;height:52px;border-radius:12px;border:none;font:700 15px 'Public Sans';margin-top:4px;" +
+        (loginDisabled ? "background:#E8E3D8;color:#A9A196;cursor:not-allowed;" : "background:#C6A15B;color:#16223B;cursor:pointer;"),
+
+      pageTitle: titles[s.screen] || '',
+      userInitials: roleNames[s.role].split(' ').map((w) => w[0]).slice(0, 2).join(''),
+      userName: roleNames[s.role],
+      roleLabel: roleLabels[s.role],
+
+      roleAdminBtnStyle: s.role === 'admin' ? SEG_ACTIVE : SEG_INACTIVE,
+      roleOperadorBtnStyle: s.role === 'operador' ? SEG_ACTIVE : SEG_INACTIVE,
+      roleFinanceiroBtnStyle: s.role === 'financeiro' ? SEG_ACTIVE : SEG_INACTIVE,
+      setRoleAdmin: this.setRoleAdmin,
+      setRoleOperador: this.setRoleOperador,
+      setRoleFinanceiro: this.setRoleFinanceiro,
+
+      navDashboard: this.navDashboard,
+      navAgendamentos: this.navAgendamentos,
+      navFrota: this.navFrota,
+      navCadastro: this.navCadastro,
+      navFinanceiro: this.navFinanceiro,
+      navRelatorios: this.navRelatorios,
+      navDashboardStyle: s.screen === 'dashboard' ? NAV_ACTIVE : NAV_INACTIVE,
+      navAgendamentosStyle: s.screen === 'agendamentos' ? NAV_ACTIVE : NAV_INACTIVE,
+      navFrotaStyle: s.screen === 'frota' ? NAV_ACTIVE : NAV_INACTIVE,
+      navCadastroStyle: s.screen === 'cadastro' ? NAV_ACTIVE : NAV_INACTIVE,
+      navFinanceiroStyle: s.screen === 'financeiro' ? NAV_ACTIVE : NAV_INACTIVE,
+      navRelatoriosStyle: s.screen === 'relatorios' ? NAV_ACTIVE : NAV_INACTIVE,
+      showAgendamentosNav: allowedByRole.includes('agendamentos'),
+      showFrotaNav: allowedByRole.includes('frota'),
+      showCadastroNav: allowedByRole.includes('cadastro'),
+      showFinanceiroNav: allowedByRole.includes('financeiro'),
+
+      isDashboard: s.screen === 'dashboard',
+      isAgendamentos: s.screen === 'agendamentos',
+      isFrota: s.screen === 'frota',
+      isCadastro: s.screen === 'cadastro',
+      isFinanceiro: s.screen === 'financeiro',
+      isRelatorios: s.screen === 'relatorios',
+
+      bookingRows,
+      bookingsWaitingLabel: waitingCount + ' reserva(s) aguardando atribuição de motorista e veículo',
+
+      assignOpen: s.assignOpen,
+      assignBookingCliente: assignBooking ? assignBooking.cliente : '',
+      assignBookingData: assignBooking ? assignBooking.data : '',
+      assignBookingRota: assignBooking ? assignBooking.rota : '',
+      assignDriver: s.assignDriver,
+      assignVehicle: s.assignVehicle,
+      onAssignDriverChange: this.onAssignDriverChange,
+      onAssignVehicleChange: this.onAssignVehicleChange,
+      driverOptions: this.driverOptions,
+      vehicleOptions: this.vehicleOptions,
+      closeAssign: this.closeAssign,
+      confirmAssign: this.confirmAssign,
+      assignDisabled: !(s.assignDriver && s.assignVehicle),
+      assignButtonStyle: "width:100%;height:52px;border-radius:12px;border:none;font:700 14.5px 'Public Sans';" +
+        (!(s.assignDriver && s.assignVehicle) ? "background:#E8E3D8;color:#A9A196;cursor:not-allowed;" : "background:#C6A15B;color:#16223B;cursor:pointer;"),
+
+      frotaDayLabel: frotaDay.label,
+      frotaRows,
+      prevFrotaDay: this.prevFrotaDay,
+      nextFrotaDay: this.nextFrotaDay,
+
+      tabMotoristasStyle: s.cadastroTab === 'motoristas' ? SEG_ACTIVE : SEG_INACTIVE,
+      tabVeiculosStyle: s.cadastroTab === 'veiculos' ? SEG_ACTIVE : SEG_INACTIVE,
+      tabClientesStyle: s.cadastroTab === 'clientes' ? SEG_ACTIVE : SEG_INACTIVE,
+      setCadastroTabMotoristas: this.setCadastroTabMotoristas,
+      setCadastroTabVeiculos: this.setCadastroTabVeiculos,
+      setCadastroTabClientes: this.setCadastroTabClientes,
+      isTabMotoristas: s.cadastroTab === 'motoristas',
+      isTabVeiculos: s.cadastroTab === 'veiculos',
+      isTabClientes: s.cadastroTab === 'clientes',
+      motoristasRows,
+      veiculosRows: s.veiculos,
+      clientesRows: s.clientes,
+
+      openNewRecord: this.openNewRecord,
+      cadastroDrawerOpen: s.cadastroDrawerOpen,
+      closeNewRecord: this.closeNewRecord,
+      newRecordTitle: newRecordTitles[s.cadastroTab],
+      field1Label: fieldLabels[0], field2Label: fieldLabels[1], field3Label: fieldLabels[2], field4Label: fieldLabels[3],
+      newF1: s.newF1, newF2: s.newF2, newF3: s.newF3, newF4: s.newF4,
+      onNewF1Change: this.onNewF1Change, onNewF2Change: this.onNewF2Change, onNewF3Change: this.onNewF3Change, onNewF4Change: this.onNewF4Change,
+      saveNewRecord: this.saveNewRecord,
+      newRecordDisabled,
+      newRecordButtonStyle: "width:100%;height:52px;border-radius:12px;border:none;font:700 14.5px 'Public Sans';" +
+        (newRecordDisabled ? "background:#E8E3D8;color:#A9A196;cursor:not-allowed;" : "background:#C6A15B;color:#16223B;cursor:pointer;"),
+
+      periodoSemanaStyle: s.periodoFinanceiro === 'semana' ? SEG_ACTIVE : SEG_INACTIVE,
+      periodoMesStyle: s.periodoFinanceiro === 'mes' ? SEG_ACTIVE : SEG_INACTIVE,
+      setPeriodoSemana: this.setPeriodoSemana,
+      setPeriodoMes: this.setPeriodoMes,
+      repassesRows: this.repasses.map((r) => ({
+        motorista: r.motorista, corridas: r.corridas,
+        brutoLabel: fmtBRL(r.bruto), taxaLabel: fmtBRL(r.taxa), liquidoLabel: fmtBRL(r.liquido),
+        status: r.status, statusStyle: pillStyle(r.status === 'Pago' ? 'sage' : 'gold')
+      })),
+
+      relatorioSemanaStyle: s.periodoRelatorio === 'semana' ? SEG_ACTIVE : SEG_INACTIVE,
+      relatorioMesStyle: s.periodoRelatorio === 'mes' ? SEG_ACTIVE : SEG_INACTIVE,
+      setRelatorioSemana: this.setRelatorioSemana,
+      setRelatorioMes: this.setRelatorioMes
+    };
+  }
+}
+</script>
+</body>
+</html>
