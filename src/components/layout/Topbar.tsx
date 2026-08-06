@@ -16,8 +16,8 @@ export function Topbar() {
 	}
 
 	return (
-		<header className="flex h-[76px] shrink-0 items-center justify-between border-neutral-300 border-b bg-white px-8">
-			<div className="font-display font-bold text-[22px] text-navy-800">
+		<header className="flex h-[76px] shrink-0 items-center justify-between border-neutral-300 border-b bg-white px-4 lg:px-8">
+			<div className="truncate font-display font-bold text-[18px] text-navy-800 lg:text-[22px]">
 				{activeItem?.label}
 			</div>
 			<button

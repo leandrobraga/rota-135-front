@@ -43,23 +43,23 @@ function LoginPage() {
 	}
 
 	return (
-		<div className="flex min-h-screen">
-			<div className="flex flex-1 flex-col items-center justify-center bg-[linear-gradient(160deg,#0F1F3A_0%,#0A1628_100%)] px-15 py-15">
+		<div className="flex min-h-screen flex-col lg:flex-row">
+			<div className="flex flex-none flex-col items-center justify-center bg-[linear-gradient(160deg,#0F1F3A_0%,#0A1628_100%)] px-6 py-8 lg:flex-1 lg:px-15 lg:py-15">
 				<div className="mb-6 h-[1.5px] w-14 bg-gold-500" />
-				<div className="font-display text-[42px] font-bold tracking-[2px] text-white">
+				<div className="font-display text-[32px] font-bold tracking-[2px] text-white lg:text-[42px]">
 					ROTA 135
 				</div>
 				<div className="mt-3 text-[14px] leading-none font-bold tracking-[3px] text-gold-500">
 					PAINEL ADMINISTRATIVO
 				</div>
 				<div className="mt-6 mb-7 h-[1.5px] w-14 bg-gold-500" />
-				<div className="max-w-[340px] text-center text-[14.5px] leading-[1.7] text-white/55">
+				<div className="text-center text-[14.5px] leading-[1.7] text-white/55 lg:max-w-[340px]">
 					Gestão de agendamentos, frota, cadastros e financeiro da rota Montes
 					Claros – Belo Horizonte.
 				</div>
 			</div>
 
-			<div className="flex w-[460px] flex-none flex-col justify-center bg-white px-15 py-15">
+			<div className="flex flex-1 flex-col justify-center bg-white px-6 py-8 lg:w-[460px] lg:flex-none lg:px-15 lg:py-15">
 				<div className="mb-1.5 text-[26px] font-bold text-navy-800">Entrar</div>
 				<div className="mb-7 text-[14px] leading-none text-neutral-600">
 					Acesse com sua conta corporativa.

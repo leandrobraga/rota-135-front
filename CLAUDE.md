@@ -62,6 +62,13 @@ usa `inferAdditionalFields` com schema do enum. Zonas, via
 - `ADMIN`,`FINANCE`: payments, payouts
 - `ADMIN` só: users (equipe)
 
+## Formulários — convenção fixa
+
+Erros do Better Auth (`error.message` no `onError`) vêm em inglês por
+padrão — nunca exibir `error.message` cru na UI. Traduzir por `error.code`
+num dicionário PT-BR (ver `features/auth/lib/auth-error-messages.ts` como
+referência do padrão), com fallback genérico pra code não mapeado.
+
 ## Trips: sem state machine no frontend
 
 Transição de estado é 100% backend. Frontend só chama a ação
