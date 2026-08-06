@@ -20,6 +20,8 @@ export function FormPanel({
 			<Dialog.Portal>
 				<Dialog.Overlay className="fixed inset-0 z-40 bg-navy-900/45 data-[state=open]:animate-[overlayIn_0.2s_ease]" />
 				<Dialog.Content
+					onPointerDownOutside={(event) => event.preventDefault()}
+					onInteractOutside={(event) => event.preventDefault()}
 					className={[
 						"fixed z-50 flex flex-col gap-4 bg-cream-100 outline-none",
 						"inset-x-0 bottom-0 max-h-[90vh] rounded-t-2xl p-6",

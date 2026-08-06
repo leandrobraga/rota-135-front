@@ -1,7 +1,12 @@
 import type { Options as KyOptions } from "ky";
 
 import { api } from "#/lib/api-client/ky-client";
-import type { paths } from "#/lib/api-client/schema.d.ts";
+import type { operations, paths } from "#/lib/api-client/schema.d.ts";
+
+// components.schemas é sempre never nesse projeto — extrai tipo de resposta
+// direto da operation, já descendo até o campo `data` do envelope da API.
+export type ApiResponse<Op extends keyof operations> =
+	operations[Op]["responses"][200]["content"]["application/json"]["data"];
 
 type PathsWithMethod<Method extends string> = {
 	[Path in keyof paths]: Method extends keyof paths[Path] ? Path : never;

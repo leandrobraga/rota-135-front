@@ -4,7 +4,7 @@ import { useDebounce } from "#/hooks/useDebounce";
 export type DataTableColumn<T> = {
 	key: keyof T & string;
 	label: string;
-	mobileRole?: "title" | "badge" | "meta";
+	mobileRole?: "title" | "badge" | "meta" | "actions";
 	render?: (item: T) => React.ReactNode;
 };
 
@@ -57,6 +57,9 @@ export function DataTable<T>({
 		(column) => column.mobileRole === "badge",
 	);
 	const metaColumns = columns.filter((column) => column.mobileRole === "meta");
+	const actionsColumns = columns.filter(
+		(column) => column.mobileRole === "actions",
+	);
 
 	const [accumulated, setAccumulated] = useState<T[]>(data);
 	const [lastResetKey, setLastResetKey] = useState(resetKey);
@@ -162,49 +165,60 @@ export function DataTable<T>({
 					)}
 
 					<div className="flex flex-col gap-3 lg:hidden">
-						{mobileData.map((item, index) => (
-							<button
-								type="button"
-								// biome-ignore lint/suspicious/noArrayIndexKey: rows have no guaranteed stable id in generic data
-								key={index}
-								onClick={() => onRowClick?.(item)}
-								disabled={!onRowClick}
-								className="flex flex-col gap-1.5 rounded-xl border border-neutral-300 bg-white p-4 text-left"
-							>
-								<div className="flex items-start justify-between gap-2">
-									<div className="flex flex-col gap-1">
-										{titleColumns.map((column) => (
-											<div
-												key={column.key}
-												className="font-bold text-[13.5px] text-navy-800"
-											>
-												{cell(item, column)}
+						{mobileData.map((item, index) => {
+							const actionsContent = actionsColumns
+								.map((column) => cell(item, column))
+								.filter((content) => content !== null && content !== undefined);
+
+							return (
+								<button
+									type="button"
+									// biome-ignore lint/suspicious/noArrayIndexKey: rows have no guaranteed stable id in generic data
+									key={index}
+									onClick={() => onRowClick?.(item)}
+									disabled={!onRowClick}
+									className="flex flex-col gap-1.5 rounded-xl border border-neutral-300 bg-white p-4 text-left"
+								>
+									<div className="flex items-start justify-between gap-2">
+										<div className="flex flex-col gap-1">
+											{titleColumns.map((column) => (
+												<div
+													key={column.key}
+													className="font-bold text-[13.5px] text-navy-800"
+												>
+													{cell(item, column)}
+												</div>
+											))}
+										</div>
+										{badgeColumns.length > 0 && (
+											<div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+												{badgeColumns.map((column) => (
+													<div key={column.key}>{cell(item, column)}</div>
+												))}
 											</div>
-										))}
+										)}
 									</div>
-									{badgeColumns.length > 0 && (
-										<div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
-											{badgeColumns.map((column) => (
-												<div key={column.key}>{cell(item, column)}</div>
+									{metaColumns.length > 0 && (
+										<div className="flex flex-wrap items-center gap-x-1.5 text-[12.5px] text-neutral-600">
+											{metaColumns.map((column, i) => (
+												<span
+													key={column.key}
+													className="flex items-center gap-1.5"
+												>
+													{i > 0 && <span className="text-neutral-400">·</span>}
+													{cell(item, column)}
+												</span>
 											))}
 										</div>
 									)}
-								</div>
-								{metaColumns.length > 0 && (
-									<div className="flex flex-wrap items-center gap-x-1.5 text-[12.5px] text-neutral-600">
-										{metaColumns.map((column, i) => (
-											<span
-												key={column.key}
-												className="flex items-center gap-1.5"
-											>
-												{i > 0 && <span className="text-neutral-400">·</span>}
-												{cell(item, column)}
-											</span>
-										))}
-									</div>
-								)}
-							</button>
-						))}
+									{actionsContent.length > 0 && (
+										<div className="flex flex-wrap items-center gap-1.5">
+											{actionsContent}
+										</div>
+									)}
+								</button>
+							);
+						})}
 
 						{mobilePagination?.hasMore && (
 							<button
