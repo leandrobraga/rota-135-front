@@ -13,22 +13,62 @@ type FakeRow = {
 	nome: string;
 	status: string;
 	data: string;
+	cidade: string;
 };
 
-const fakeData: FakeRow[] = [
-	{ nome: "João Pereira", status: "Ativo", data: "12/08/2026" },
-	{ nome: "Marina Souza", status: "Pendente", data: "13/08/2026" },
-	{ nome: "Carlos Lima", status: "Ativo", data: "14/08/2026" },
-	{ nome: "Fernanda Rocha", status: "Cancelado", data: "15/08/2026" },
-	{ nome: "Rafael Nunes", status: "Ativo", data: "16/08/2026" },
+const nomes = [
+	"João Pereira",
+	"Marina Souza",
+	"Carlos Lima",
+	"Fernanda Rocha",
+	"Rafael Nunes",
+	"Beatriz Alves",
+	"Thiago Martins",
+	"Camila Duarte",
+	"Eduardo Ramos",
+	"Larissa Freitas",
+	"Gustavo Barbosa",
+	"Patrícia Gomes",
+	"André Cardoso",
+	"Juliana Teixeira",
+	"Bruno Correia",
+	"Vanessa Pinto",
+	"Diego Farias",
+	"Sabrina Castro",
+	"Leonardo Vieira",
+	"Priscila Moraes",
+	"Felipe Azevedo",
+	"Renata Monteiro",
+	"Hugo Cavalcanti",
+	"Aline Borges",
+	"Marcelo Tavares",
 ];
 
+const cidades = [
+	"São Paulo",
+	"Rio de Janeiro",
+	"Belo Horizonte",
+	"Curitiba",
+	"Porto Alegre",
+];
+
+const statusList = ["Ativo", "Pendente", "Cancelado"];
+
+const allFakeData: FakeRow[] = nomes.map((nome, index) => ({
+	nome,
+	status: statusList[index % statusList.length],
+	data: `${String((index % 28) + 1).padStart(2, "0")}/08/2026`,
+	cidade: cidades[index % cidades.length],
+}));
+
+const PAGE_SIZE = 5;
+
 const columns: DataTableColumn<FakeRow>[] = [
-	{ key: "nome", label: "Nome", primary: true },
+	{ key: "nome", label: "Nome", mobileRole: "title" },
 	{
 		key: "status",
 		label: "Status",
-		primary: true,
+		mobileRole: "badge",
 		render: (item) => (
 			<span
 				className={`rounded-full px-2.5 py-1 font-bold text-[11.5px] ${
@@ -41,12 +81,31 @@ const columns: DataTableColumn<FakeRow>[] = [
 			</span>
 		),
 	},
-	{ key: "data", label: "Data" },
+	{ key: "cidade", label: "Cidade", mobileRole: "meta" },
+	{ key: "data", label: "Data", mobileRole: "meta" },
 ];
 
 function DevTestPage() {
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const [search, setSearch] = useState("");
+	// Cursor único: desktop usa só a página atual (troca), mobile acumula
+	// cada página nova que o cursor visita (DataTable soma internamente).
+	const [page, setPage] = useState(1);
+
+	const filtered = allFakeData.filter((item) =>
+		item.nome.toLowerCase().includes(search.toLowerCase()),
+	);
+	const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+	const currentPageSlice = filtered.slice(
+		(page - 1) * PAGE_SIZE,
+		page * PAGE_SIZE,
+	);
+
+	function handleSearchChange(value: string) {
+		setSearch(value);
+		setPage(1);
+	}
 
 	return (
 		<div className="flex flex-col gap-8">
@@ -78,10 +137,25 @@ function DevTestPage() {
 				</div>
 				<DataTable
 					columns={columns}
-					data={fakeData}
+					data={currentPageSlice}
 					isLoading={loading}
 					emptyMessage="Nenhum registro encontrado."
 					onRowClick={(item) => alert(`Clicou em ${item.nome}`)}
+					search={{
+						value: search,
+						onChange: handleSearchChange,
+						placeholder: "Buscar por nome...",
+					}}
+					pagination={{
+						page,
+						pageCount,
+						onPageChange: setPage,
+					}}
+					mobilePagination={{
+						hasMore: page < pageCount,
+						onLoadMore: () => setPage((p) => Math.min(p + 1, pageCount)),
+					}}
+					resetKey={search}
 				/>
 			</div>
 
