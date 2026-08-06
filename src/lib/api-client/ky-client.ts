@@ -9,7 +9,7 @@ export const api = ky.create({
 		afterResponse: [
 			({ response }) => {
 				if (response.status === 401) {
-					router.navigate({ href: "/login" });
+					router.navigate({ to: "/login" });
 				}
 			},
 		],
