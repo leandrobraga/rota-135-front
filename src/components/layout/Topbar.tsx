@@ -1,26 +1,32 @@
-import { useRouter } from "@tanstack/react-router";
-import { authClient, useSession } from "#/lib/auth-client";
+import { useLocation, useRouter } from "@tanstack/react-router";
+import { Bell } from "lucide-react";
+import { navItems } from "#/components/layout/nav-config";
 
 export function Topbar() {
 	const router = useRouter();
-	const { data: session } = useSession();
+	const { pathname } = useLocation();
 
-	async function handleLogout() {
-		await authClient.signOut();
-		router.navigate({ to: "/login" });
+	const activeItem =
+		navItems.find((item) =>
+			item.to === "/" ? pathname === "/" : pathname.startsWith(item.to),
+		) ?? navItems[0];
+
+	function handleNotificationsClick() {
+		router.navigate({ to: "/notifications" });
 	}
 
 	return (
-		<header className="flex h-16 shrink-0 items-center justify-end gap-4 border-neutral-300 border-b bg-cream-50 px-8">
-			<span className="text-sm font-medium text-navy-900">
-				{session?.user.name}
-			</span>
+		<header className="flex h-[76px] shrink-0 items-center justify-between border-neutral-300 border-b bg-white px-8">
+			<div className="font-display font-bold text-[22px] text-navy-800">
+				{activeItem?.label}
+			</div>
 			<button
 				type="button"
-				onClick={handleLogout}
-				className="rounded-full border border-neutral-300 px-4 py-1.5 text-sm font-medium text-neutral-600 transition-colors hover:border-navy-900 hover:text-navy-900"
+				onClick={handleNotificationsClick}
+				aria-label="Notificações"
+				className="text-navy-800"
 			>
-				Sair
+				<Bell size={22} strokeWidth={2} />
 			</button>
 		</header>
 	);
