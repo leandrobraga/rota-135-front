@@ -13,6 +13,7 @@ import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
 import { Route as AuthedCustomerRouteImport } from './routes/_authed/customer'
+import { Route as AuthedDevFormpanelTestRouteImport } from './routes/_authed/dev-formpanel-test'
 import { Route as AuthedDriversRouteImport } from './routes/_authed/drivers'
 import { Route as AuthedNotificationsRouteImport } from './routes/_authed/notifications'
 import { Route as AuthedPaymentsRouteImport } from './routes/_authed/payments'
@@ -39,6 +40,11 @@ const AuthedIndexRoute = AuthedIndexRouteImport.update({
 const AuthedCustomerRoute = AuthedCustomerRouteImport.update({
   id: '/customer',
   path: '/customer',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedDevFormpanelTestRoute = AuthedDevFormpanelTestRouteImport.update({
+  id: '/dev-formpanel-test',
+  path: '/dev-formpanel-test',
   getParentRoute: () => AuthedRoute,
 } as any)
 const AuthedDriversRoute = AuthedDriversRouteImport.update({
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthedIndexRoute
   '/login': typeof LoginRoute
   '/customer': typeof AuthedCustomerRoute
+  '/dev-formpanel-test': typeof AuthedDevFormpanelTestRoute
   '/drivers': typeof AuthedDriversRoute
   '/notifications': typeof AuthedNotificationsRoute
   '/payments': typeof AuthedPaymentsRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/customer': typeof AuthedCustomerRoute
+  '/dev-formpanel-test': typeof AuthedDevFormpanelTestRoute
   '/drivers': typeof AuthedDriversRoute
   '/notifications': typeof AuthedNotificationsRoute
   '/payments': typeof AuthedPaymentsRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/_authed': typeof AuthedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authed/customer': typeof AuthedCustomerRoute
+  '/_authed/dev-formpanel-test': typeof AuthedDevFormpanelTestRoute
   '/_authed/drivers': typeof AuthedDriversRoute
   '/_authed/notifications': typeof AuthedNotificationsRoute
   '/_authed/payments': typeof AuthedPaymentsRoute
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/customer'
+    | '/dev-formpanel-test'
     | '/drivers'
     | '/notifications'
     | '/payments'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
   to:
     | '/login'
     | '/customer'
+    | '/dev-formpanel-test'
     | '/drivers'
     | '/notifications'
     | '/payments'
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/_authed'
     | '/login'
     | '/_authed/customer'
+    | '/_authed/dev-formpanel-test'
     | '/_authed/drivers'
     | '/_authed/notifications'
     | '/_authed/payments'
@@ -199,6 +211,13 @@ declare module '@tanstack/react-router' {
       path: '/customer'
       fullPath: '/customer'
       preLoaderRoute: typeof AuthedCustomerRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/dev-formpanel-test': {
+      id: '/_authed/dev-formpanel-test'
+      path: '/dev-formpanel-test'
+      fullPath: '/dev-formpanel-test'
+      preLoaderRoute: typeof AuthedDevFormpanelTestRouteImport
       parentRoute: typeof AuthedRoute
     }
     '/_authed/drivers': {
@@ -262,6 +281,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthedRouteChildren {
   AuthedCustomerRoute: typeof AuthedCustomerRoute
+  AuthedDevFormpanelTestRoute: typeof AuthedDevFormpanelTestRoute
   AuthedDriversRoute: typeof AuthedDriversRoute
   AuthedNotificationsRoute: typeof AuthedNotificationsRoute
   AuthedPaymentsRoute: typeof AuthedPaymentsRoute
@@ -275,6 +295,7 @@ interface AuthedRouteChildren {
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedCustomerRoute: AuthedCustomerRoute,
+  AuthedDevFormpanelTestRoute: AuthedDevFormpanelTestRoute,
   AuthedDriversRoute: AuthedDriversRoute,
   AuthedNotificationsRoute: AuthedNotificationsRoute,
   AuthedPaymentsRoute: AuthedPaymentsRoute,
