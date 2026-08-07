@@ -145,7 +145,7 @@ export interface paths {
         };
         /**
          * Lista clientes
-         * @description Lista paginada de todos os clientes cadastrados na plataforma.
+         * @description Lista paginada de todos os clientes cadastrados na plataforma. Aceita busca opcional via `search`, que filtra por nome, e-mail ou CPF (match parcial, sem diferenciar maiúsculas/minúsculas).
          */
         get: operations["getCustomer"];
         put?: never;
@@ -297,7 +297,7 @@ export interface paths {
         };
         /**
          * Lista veículos
-         * @description Lista paginada de todos os veículos da frota.
+         * @description Lista paginada de todos os veículos da frota. Aceita busca opcional via `search`, que filtra por placa, marca ou modelo (match parcial, sem diferenciar maiúsculas/minúsculas).
          */
         get: operations["getVehicles"];
         put?: never;
@@ -354,6 +354,26 @@ export interface paths {
          * @description Desativa o veículo, impedindo que ele seja atribuído a novas corridas, sem excluir o cadastro.
          */
         patch: operations["patchVehiclesByIdDeactivate"];
+        trace?: never;
+    };
+    "/vehicles/{id}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Reativa um veículo
+         * @description Reativa um veículo previamente desativado, permitindo que volte a ser atribuído a novas corridas.
+         */
+        patch: operations["patchVehiclesByIdActivate"];
         trace?: never;
     };
     "/pricing/": {
@@ -1123,7 +1143,11 @@ export interface operations {
     };
     getCustomer: {
         parameters: {
-            query?: never;
+            query?: {
+                search?: string;
+                page?: number;
+                pageSize?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1596,7 +1620,11 @@ export interface operations {
     };
     getVehicles: {
         parameters: {
-            query?: never;
+            query?: {
+                search?: string;
+                page?: number;
+                pageSize?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1800,6 +1828,42 @@ export interface operations {
         };
     };
     patchVehiclesByIdDeactivate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            plate: string;
+                            brand: string;
+                            model: string;
+                            year: number;
+                            color: string | null;
+                            capacity: number;
+                            photo: string | null;
+                            active: boolean;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    patchVehiclesByIdActivate: {
         parameters: {
             query?: never;
             header?: never;
