@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { type UseFormRegisterReturn, useForm } from "react-hook-form";
+import { useHookFormMask } from "use-mask-input";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
 import { FormPanel } from "#/components/FormPanel";
 import { useActivateVehicleMutation } from "#/features/vehicles/mutations/use-activate-vehicle-mutation";
@@ -78,6 +79,7 @@ function CreateVehicleForm({
 		resolver: zodResolver(createVehicleSchema),
 		mode: "onChange",
 	});
+	const registerWithMask = useHookFormMask(register);
 
 	async function onSubmit(values: CreateVehicleFormData) {
 		try {
@@ -130,7 +132,10 @@ function CreateVehicleForm({
 					label="Placa"
 					placeholder="ABC1D23"
 					error={errors.plate?.message}
-					register={register("plate")}
+					register={registerWithMask("plate", "aaa9*99", {
+						autoUnmask: true,
+						casing: "upper",
+					})}
 				/>
 				<TextField
 					id="brand"
@@ -210,6 +215,7 @@ function EditVehicleForm({
 			color: vehicle.color ?? "",
 		},
 	});
+	const registerWithMask = useHookFormMask(register);
 
 	async function onSubmit(values: UpdateVehicleFormData) {
 		try {
@@ -288,7 +294,10 @@ function EditVehicleForm({
 						label="Placa"
 						placeholder="ABC1D23"
 						error={errors.plate?.message}
-						register={register("plate")}
+						register={registerWithMask("plate", "aaa9*99", {
+							autoUnmask: true,
+							casing: "upper",
+						})}
 					/>
 					<TextField
 						id="brand"
