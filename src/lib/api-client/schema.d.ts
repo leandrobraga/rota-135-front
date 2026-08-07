@@ -1557,18 +1557,27 @@ export interface operations {
                     pixKey?: string;
                     name?: string;
                     phone?: string;
+                    /** Format: email */
+                    email?: string;
+                    cpf?: string;
                 };
                 "application/x-www-form-urlencoded": {
                     licenseNumber?: string;
                     pixKey?: string;
                     name?: string;
                     phone?: string;
+                    /** Format: email */
+                    email?: string;
+                    cpf?: string;
                 };
                 "multipart/form-data": {
                     licenseNumber?: string;
                     pixKey?: string;
                     name?: string;
                     phone?: string;
+                    /** Format: email */
+                    email?: string;
+                    cpf?: string;
                 };
             };
         };

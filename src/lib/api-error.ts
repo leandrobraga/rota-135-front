@@ -6,6 +6,7 @@ type BusinessErrorBody = {
 	error?: {
 		code?: string;
 		message?: string;
+		field?: string;
 	};
 };
 
@@ -45,7 +46,11 @@ export function getApiFieldError(error: unknown): {
 	}
 
 	const business = data as BusinessErrorBody;
-	if (business.error?.message) return { message: business.error.message };
+	if (business.error?.message) {
+		return business.error.field
+			? { field: business.error.field, message: business.error.message }
+			: { message: business.error.message };
+	}
 
 	return { message: FALLBACK_MESSAGE };
 }

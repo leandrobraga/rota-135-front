@@ -20,6 +20,7 @@ import {
 } from "#/features/drivers/schemas/update-driver.schema";
 import type { Driver, DriverApprovalStatus } from "#/features/drivers/types";
 import { getApiFieldError } from "#/lib/api-error";
+import { formatCpfDisplay } from "#/lib/formatters";
 
 const APPROVAL_STATUS_OPTIONS: {
 	value: DriverApprovalStatus;
@@ -90,10 +91,13 @@ const CREATE_DRIVER_FORM_FIELDS = [
 ] as const;
 type CreateDriverFormField = (typeof CREATE_DRIVER_FORM_FIELDS)[number];
 
-// email/cpf não são editáveis nessa rota, então não existem como campo do form de edição.
+// email/cpf só são editáveis quando approvalStatus === "PENDING", mas o
+// campo continua existindo pro backend poder apontar erro nele mesmo assim.
 const UPDATE_DRIVER_FORM_FIELDS = [
 	"name",
+	"email",
 	"phone",
+	"cpf",
 	"licenseNumber",
 	"pixKey",
 ] as const;
@@ -287,7 +291,9 @@ function EditDriverForm({
 		mode: "onChange",
 		defaultValues: {
 			name: driver.name,
+			email: driver.email,
 			phone: driver.phone ?? "",
+			cpf: driver.cpf,
 			licenseNumber: driver.licenseNumber,
 			pixKey: driver.pixKey ?? "",
 		},
@@ -373,7 +379,18 @@ function EditDriverForm({
 						error={errors.name?.message}
 						register={register("name")}
 					/>
-					<ReadOnlyField id="email" label="E-mail" value={driver.email} />
+					{driver.approvalStatus === "PENDING" ? (
+						<TextField
+							id="email"
+							label="E-mail"
+							type="email"
+							placeholder="motorista@rota135.com.br"
+							error={errors.email?.message}
+							register={register("email")}
+						/>
+					) : (
+						<ReadOnlyField id="email" label="E-mail" value={driver.email} />
+					)}
 					<TextField
 						id="phone"
 						label="Telefone"
@@ -385,7 +402,21 @@ function EditDriverForm({
 							{ autoUnmask: true },
 						)}
 					/>
-					<ReadOnlyField id="cpf" label="CPF" value={driver.cpf} />
+					{driver.approvalStatus === "PENDING" ? (
+						<TextField
+							id="cpf"
+							label="CPF"
+							placeholder="000.000.000-00"
+							error={errors.cpf?.message}
+							register={registerWithMask("cpf", "cpf", { autoUnmask: true })}
+						/>
+					) : (
+						<ReadOnlyField
+							id="cpf"
+							label="CPF"
+							value={formatCpfDisplay(driver.cpf)}
+						/>
+					)}
 					<TextField
 						id="licenseNumber"
 						label="CNH"
