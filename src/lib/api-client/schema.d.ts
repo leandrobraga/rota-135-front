@@ -200,6 +200,26 @@ export interface paths {
         patch: operations["patchCustomerByIdDeactivate"];
         trace?: never;
     };
+    "/customer/{id}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Reativa um cliente
+         * @description Reativa o acesso de um cliente previamente desativado à plataforma.
+         */
+        patch: operations["patchCustomerByIdActivate"];
+        trace?: never;
+    };
     "/drivers/": {
         parameters: {
             query?: never;
@@ -286,6 +306,26 @@ export interface paths {
          * @description Desativa o acesso do motorista, sem excluir o cadastro.
          */
         patch: operations["patchDriversByIdDeactivate"];
+        trace?: never;
+    };
+    "/drivers/{id}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Reativa um motorista
+         * @description Reativa o acesso de um motorista previamente desativado à plataforma.
+         */
+        patch: operations["patchDriversByIdActivate"];
         trace?: never;
     };
     "/vehicles/": {
@@ -1313,6 +1353,42 @@ export interface operations {
             };
         };
     };
+    patchCustomerByIdActivate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            userId: string;
+                            name: string;
+                            email: string;
+                            phone: string | null;
+                            cpf: string;
+                            active: boolean;
+                            emergencyContactName: string | null;
+                            emergencyContactPhone: string | null;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
     getDrivers: {
         parameters: {
             query?: {
@@ -1580,6 +1656,45 @@ export interface operations {
         };
     };
     patchDriversByIdDeactivate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            userId: string;
+                            name: string;
+                            email: string;
+                            phone: string | null;
+                            cpf: string;
+                            active: boolean;
+                            licenseNumber: string;
+                            /** @enum {string} */
+                            approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
+                            pixKey: string | null;
+                            pushToken: string | null;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    patchDriversByIdActivate: {
         parameters: {
             query?: never;
             header?: never;

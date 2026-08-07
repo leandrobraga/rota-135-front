@@ -4,8 +4,11 @@ import { type UseFormRegisterReturn, useForm } from "react-hook-form";
 import { useHookFormMask } from "use-mask-input";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
 import { FormPanel } from "#/components/FormPanel";
+import { DriverStatusBadge } from "#/features/drivers/components/DriverStatusBadge";
+import { useActivateDriverMutation } from "#/features/drivers/mutations/use-activate-driver-mutation";
 import { useCreateDriverMutation } from "#/features/drivers/mutations/use-create-driver-mutation";
 import { useDeactivateDriverMutation } from "#/features/drivers/mutations/use-deactivate-driver-mutation";
+import { useUpdateApprovalStatusMutation } from "#/features/drivers/mutations/use-update-approval-status-mutation";
 import { useUpdateDriverMutation } from "#/features/drivers/mutations/use-update-driver-mutation";
 import {
 	type CreateDriverFormData,
@@ -15,8 +18,67 @@ import {
 	type UpdateDriverFormData,
 	updateDriverSchema,
 } from "#/features/drivers/schemas/update-driver.schema";
-import type { Driver } from "#/features/drivers/types";
+import type { Driver, DriverApprovalStatus } from "#/features/drivers/types";
 import { getApiFieldError } from "#/lib/api-error";
+
+const APPROVAL_STATUS_OPTIONS: {
+	value: DriverApprovalStatus;
+	label: string;
+	style: string;
+	needsConfirm: boolean;
+}[] = [
+	{
+		value: "PENDING",
+		label: "Pendente",
+		style: "border border-neutral-300 text-navy-800",
+		needsConfirm: true,
+	},
+	{
+		value: "APPROVED",
+		label: "Aprovado",
+		style: "border border-sage-500 text-sage-500",
+		needsConfirm: false,
+	},
+	{
+		value: "REJECTED",
+		label: "Rejeitado",
+		style: "border border-[#9C4A3E] text-[#9C4A3E]",
+		needsConfirm: true,
+	},
+	{
+		value: "SUSPENDED",
+		label: "Suspenso",
+		style: "border border-[#9C4A3E] text-[#9C4A3E]",
+		needsConfirm: true,
+	},
+];
+
+const APPROVAL_STATUS_CONFIRM_COPY: Record<
+	DriverApprovalStatus,
+	{ title: string; description: (name: string) => string; confirmLabel: string }
+> = {
+	PENDING: {
+		title: "Voltar para pendente",
+		description: (name) =>
+			`Tem certeza que deseja voltar o status de ${name} para pendente?`,
+		confirmLabel: "Voltar para pendente",
+	},
+	APPROVED: {
+		title: "Aprovar motorista",
+		description: (name) => `Tem certeza que deseja aprovar ${name}?`,
+		confirmLabel: "Aprovar",
+	},
+	REJECTED: {
+		title: "Rejeitar motorista",
+		description: (name) => `Tem certeza que deseja rejeitar ${name}?`,
+		confirmLabel: "Rejeitar",
+	},
+	SUSPENDED: {
+		title: "Suspender motorista",
+		description: (name) => `Tem certeza que deseja suspender ${name}?`,
+		confirmLabel: "Suspender",
+	},
+};
 
 const CREATE_DRIVER_FORM_FIELDS = [
 	"name",
@@ -208,8 +270,12 @@ function EditDriverForm({
 	onOpenChange: (open: boolean) => void;
 }) {
 	const [confirmingDeactivate, setConfirmingDeactivate] = useState(false);
+	const [confirmingApprovalStatus, setConfirmingApprovalStatus] =
+		useState<DriverApprovalStatus | null>(null);
 	const updateMutation = useUpdateDriverMutation(driver.id);
 	const deactivateMutation = useDeactivateDriverMutation(driver.id);
+	const activateMutation = useActivateDriverMutation(driver.id);
+	const approvalStatusMutation = useUpdateApprovalStatusMutation(driver.id);
 	const {
 		register,
 		handleSubmit,
@@ -267,14 +333,30 @@ function EditDriverForm({
 						>
 							{isSubmitting ? "Salvando..." : "Salvar alterações"}
 						</button>
-						<button
-							type="button"
-							onClick={() => setConfirmingDeactivate(true)}
-							disabled={!driver.active}
-							className="h-[50px] rounded-[10px] border border-[#9C4A3E] font-bold text-[15px] text-[#9C4A3E] disabled:cursor-not-allowed disabled:opacity-50"
-						>
-							{driver.active ? "Desativar motorista" : "Motorista desativado"}
-						</button>
+						{driver.active ? (
+							<button
+								type="button"
+								onClick={() => setConfirmingDeactivate(true)}
+								className="h-[50px] rounded-[10px] border border-[#9C4A3E] font-bold text-[15px] text-[#9C4A3E]"
+							>
+								Desativar motorista
+							</button>
+						) : (
+							<button
+								type="button"
+								onClick={() =>
+									activateMutation.mutate(undefined, {
+										onSuccess: () => onOpenChange(false),
+									})
+								}
+								disabled={activateMutation.isPending}
+								className="h-[50px] rounded-[10px] border border-sage-500 font-bold text-[15px] text-sage-500 disabled:cursor-not-allowed disabled:opacity-50"
+							>
+								{activateMutation.isPending
+									? "Reativando..."
+									: "Reativar motorista"}
+							</button>
+						)}
 					</>
 				}
 			>
@@ -326,6 +408,40 @@ function EditDriverForm({
 				</form>
 			</FormPanel>
 
+			<div className="mt-4 rounded-[10px] border border-neutral-300 p-4">
+				<div className="mb-3 flex items-center justify-between">
+					<span className="text-[12px] font-bold tracking-[0.3px] text-neutral-600">
+						STATUS DE APROVAÇÃO
+					</span>
+					<DriverStatusBadge
+						active={driver.active}
+						approvalStatus={driver.approvalStatus}
+					/>
+				</div>
+				<div className="flex flex-wrap gap-2">
+					{APPROVAL_STATUS_OPTIONS.map((option) => {
+						const isCurrent = driver.approvalStatus === option.value;
+						return (
+							<button
+								key={option.value}
+								type="button"
+								disabled={isCurrent || approvalStatusMutation.isPending}
+								onClick={() => {
+									if (option.needsConfirm) {
+										setConfirmingApprovalStatus(option.value);
+									} else {
+										approvalStatusMutation.mutate(option.value);
+									}
+								}}
+								className={`h-9 rounded-[10px] px-3 font-bold text-[13px] disabled:cursor-not-allowed disabled:opacity-50 ${option.style}`}
+							>
+								{option.label}
+							</button>
+						);
+					})}
+				</div>
+			</div>
+
 			<ConfirmDialog
 				open={confirmingDeactivate}
 				onOpenChange={setConfirmingDeactivate}
@@ -340,6 +456,37 @@ function EditDriverForm({
 							setConfirmingDeactivate(false);
 							onOpenChange(false);
 						},
+					});
+				}}
+			/>
+
+			<ConfirmDialog
+				open={confirmingApprovalStatus !== null}
+				onOpenChange={(open) => !open && setConfirmingApprovalStatus(null)}
+				title={
+					confirmingApprovalStatus
+						? APPROVAL_STATUS_CONFIRM_COPY[confirmingApprovalStatus].title
+						: ""
+				}
+				description={
+					confirmingApprovalStatus
+						? APPROVAL_STATUS_CONFIRM_COPY[
+								confirmingApprovalStatus
+							].description(driver.name)
+						: ""
+				}
+				confirmLabel={
+					confirmingApprovalStatus
+						? APPROVAL_STATUS_CONFIRM_COPY[confirmingApprovalStatus]
+								.confirmLabel
+						: ""
+				}
+				variant="destructive"
+				isConfirming={approvalStatusMutation.isPending}
+				onConfirm={() => {
+					if (!confirmingApprovalStatus) return;
+					approvalStatusMutation.mutate(confirmingApprovalStatus, {
+						onSuccess: () => setConfirmingApprovalStatus(null),
 					});
 				}}
 			/>

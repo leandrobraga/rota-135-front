@@ -109,6 +109,9 @@ plugin OpenAPI).
 - **lib/formatters.ts** — `formatPhoneDisplay`/`formatCpfDisplay`, só
   exibição (dado vem sem máscara do backend). Não usar `use-mask-input`
   pra isso (é lib de input, não formatação estática).
+- **ActiveStatusBadge** — badge por active:boolean ("Ativo"/"Desativado").
+  Usado em vehicles/customer. drivers usa DriverStatusBadge (tem lógica
+  extra de approvalStatus).
 
 ## Comandos
 
@@ -122,3 +125,12 @@ Sem shadcn/ui — Tailwind puro. Referência: `design/mock-reference.html`
 `#C6A15B`, cremes `#F7F5F0`/`#FBF9F5`, neutros `#9C9285`/`#6B6459`/
 `#E8E3D8`, verde-sálvia `#5C8F72`/`#E3EEE7` (positivo). Playfair Display
 (headings/logo), Public Sans (UI/corpo).
+
+## Ativar/desativar (padrão fixo, todo módulo com essa ação)
+
+- Desativar: destrutivo, ConfirmDialog, fecha painel no onSuccess.
+- Reativar: verde-sálvia, SEM ConfirmDialog, TAMBÉM fecha painel no
+  onSuccess (esquecer isso quebrou vehicles na 1ª tentativa — painel
+  fica com dado velho, botão não atualiza).
+- Antes de implementar activate/reactivate num módulo novo: confirmar
+  no schema.d.ts que o endpoint .../activate existe. Não presumir.
