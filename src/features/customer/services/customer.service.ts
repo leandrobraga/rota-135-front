@@ -37,4 +37,11 @@ export const CustomerService = {
 		});
 		return data as Customer;
 	},
+
+	activate: async (id: string): Promise<Customer> => {
+		const { data } = await typedApi.patch("/customer/{id}/activate", {
+			params: { path: { id } },
+		});
+		return data as Customer;
+	},
 };

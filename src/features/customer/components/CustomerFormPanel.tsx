@@ -4,6 +4,7 @@ import { type UseFormRegisterReturn, useForm } from "react-hook-form";
 import { useHookFormMask } from "use-mask-input";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
 import { FormPanel } from "#/components/FormPanel";
+import { useActivateCustomerMutation } from "#/features/customer/mutations/use-activate-customer-mutation";
 import { useDeactivateCustomerMutation } from "#/features/customer/mutations/use-deactivate-customer-mutation";
 import { useUpdateCustomerMutation } from "#/features/customer/mutations/use-update-customer-mutation";
 import {
@@ -41,6 +42,7 @@ export function CustomerFormPanel({
 	const [confirmingDeactivate, setConfirmingDeactivate] = useState(false);
 	const updateMutation = useUpdateCustomerMutation(customer.id);
 	const deactivateMutation = useDeactivateCustomerMutation(customer.id);
+	const activateMutation = useActivateCustomerMutation(customer.id);
 	const {
 		register,
 		handleSubmit,
@@ -98,14 +100,30 @@ export function CustomerFormPanel({
 						>
 							{isSubmitting ? "Salvando..." : "Salvar alterações"}
 						</button>
-						<button
-							type="button"
-							onClick={() => setConfirmingDeactivate(true)}
-							disabled={!customer.active}
-							className="h-[50px] rounded-[10px] border border-[#9C4A3E] font-bold text-[15px] text-[#9C4A3E] disabled:cursor-not-allowed disabled:opacity-50"
-						>
-							{customer.active ? "Desativar cliente" : "Cliente desativado"}
-						</button>
+						{customer.active ? (
+							<button
+								type="button"
+								onClick={() => setConfirmingDeactivate(true)}
+								className="h-[50px] rounded-[10px] border border-[#9C4A3E] font-bold text-[15px] text-[#9C4A3E]"
+							>
+								Desativar cliente
+							</button>
+						) : (
+							<button
+								type="button"
+								onClick={() =>
+									activateMutation.mutate(undefined, {
+										onSuccess: () => onOpenChange(false),
+									})
+								}
+								disabled={activateMutation.isPending}
+								className="h-[50px] rounded-[10px] border border-sage-500 font-bold text-[15px] text-sage-500 disabled:cursor-not-allowed disabled:opacity-50"
+							>
+								{activateMutation.isPending
+									? "Reativando..."
+									: "Reativar cliente"}
+							</button>
+						)}
 					</>
 				}
 			>
