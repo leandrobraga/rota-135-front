@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { type UseFormRegisterReturn, useForm } from "react-hook-form";
 import { useHookFormMask } from "use-mask-input";
+import type { z } from "zod";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
 import { FormPanel } from "#/components/FormPanel";
 import { useActivateVehicleMutation } from "#/features/vehicles/mutations/use-activate-vehicle-mutation";
@@ -75,7 +76,12 @@ function CreateVehicleForm({
 		reset,
 		setError,
 		formState: { errors, isSubmitting },
-	} = useForm<CreateVehicleFormData>({
+	} = useForm<
+		z.input<typeof createVehicleSchema>,
+		// biome-ignore lint/suspicious/noExplicitAny: RHF context generic, unused
+		any,
+		z.output<typeof createVehicleSchema>
+	>({
 		resolver: zodResolver(createVehicleSchema),
 		mode: "onChange",
 	});
@@ -203,7 +209,12 @@ function EditVehicleForm({
 		reset,
 		setError,
 		formState: { errors, isSubmitting },
-	} = useForm<UpdateVehicleFormData>({
+	} = useForm<
+		z.input<typeof updateVehicleSchema>,
+		// biome-ignore lint/suspicious/noExplicitAny: RHF context generic, unused
+		any,
+		z.output<typeof updateVehicleSchema>
+	>({
 		resolver: zodResolver(updateVehicleSchema),
 		mode: "onChange",
 		defaultValues: {

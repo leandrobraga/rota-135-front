@@ -93,6 +93,9 @@ plugin OpenAPI).
   (`lib/api-error.ts`) — Promise sem handler já engoliu erro 2x.
 - Erro do Better Auth vem em inglês — nunca exibir `error.message` cru,
   traduzir por `error.code` (ver `features/auth/lib/auth-error-messages.ts`).
+- Schema com coerce OU transform quebra tipo do zodResolver (bug
+  conhecido, Zod v4 + @hookform/resolvers). Sempre:
+  useForm<z.input<typeof schema>, any, z.output<typeof schema>>({...})
 
 ## Componentes compartilhados (não recriar por módulo)
 

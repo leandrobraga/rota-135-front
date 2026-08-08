@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { type UseFormRegisterReturn, useForm } from "react-hook-form";
 import { useHookFormMask } from "use-mask-input";
+import type { z } from "zod";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
 import { FormPanel } from "#/components/FormPanel";
 import { useActivateCustomerMutation } from "#/features/customer/mutations/use-activate-customer-mutation";
@@ -49,7 +50,12 @@ export function CustomerFormPanel({
 		reset,
 		setError,
 		formState: { errors, isSubmitting },
-	} = useForm<UpdateCustomerFormData>({
+	} = useForm<
+		z.input<typeof updateCustomerSchema>,
+		// biome-ignore lint/suspicious/noExplicitAny: RHF context generic, unused
+		any,
+		z.output<typeof updateCustomerSchema>
+	>({
 		resolver: zodResolver(updateCustomerSchema),
 		mode: "onChange",
 		defaultValues: {

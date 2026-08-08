@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PricingPage } from "#/features/pricing/pages/PricingPage";
 import { requireRole } from "#/lib/route-guards";
 
 export const Route = createFileRoute("/_authed/pricing")({
@@ -6,7 +7,3 @@ export const Route = createFileRoute("/_authed/pricing")({
 		requireRole(location.href, ["ADMIN", "OPERATOR"]),
 	component: PricingPage,
 });
-
-function PricingPage() {
-	return <h1>Precificação (em construção)</h1>;
-}

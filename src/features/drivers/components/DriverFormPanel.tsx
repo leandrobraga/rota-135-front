@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { type UseFormRegisterReturn, useForm } from "react-hook-form";
 import { useHookFormMask } from "use-mask-input";
+import type { z } from "zod";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
 import { FormPanel } from "#/components/FormPanel";
 import { DriverStatusBadge } from "#/features/drivers/components/DriverStatusBadge";
@@ -155,7 +156,12 @@ function CreateDriverForm({
 		reset,
 		setError,
 		formState: { errors, isSubmitting },
-	} = useForm<CreateDriverFormData>({
+	} = useForm<
+		z.input<typeof createDriverSchema>,
+		// biome-ignore lint/suspicious/noExplicitAny: RHF context generic, unused
+		any,
+		z.output<typeof createDriverSchema>
+	>({
 		resolver: zodResolver(createDriverSchema),
 		mode: "onChange",
 	});
@@ -286,7 +292,12 @@ function EditDriverForm({
 		reset,
 		setError,
 		formState: { errors, isSubmitting },
-	} = useForm<UpdateDriverFormData>({
+	} = useForm<
+		z.input<typeof updateDriverSchema>,
+		// biome-ignore lint/suspicious/noExplicitAny: RHF context generic, unused
+		any,
+		z.output<typeof updateDriverSchema>
+	>({
 		resolver: zodResolver(updateDriverSchema),
 		mode: "onChange",
 		defaultValues: {

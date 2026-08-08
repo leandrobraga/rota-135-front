@@ -1009,6 +1009,7 @@ export interface operations {
                     /** Format: email */
                     email: string;
                     password: string;
+                    confirmPassword: string;
                     cpf: string;
                     /** @enum {string} */
                     role: "ADMIN" | "OPERATOR" | "FINANCE";
@@ -1018,6 +1019,7 @@ export interface operations {
                     /** Format: email */
                     email: string;
                     password: string;
+                    confirmPassword: string;
                     cpf: string;
                     /** @enum {string} */
                     role: "ADMIN" | "OPERATOR" | "FINANCE";
@@ -1027,6 +1029,7 @@ export interface operations {
                     /** Format: email */
                     email: string;
                     password: string;
+                    confirmPassword: string;
                     cpf: string;
                     /** @enum {string} */
                     role: "ADMIN" | "OPERATOR" | "FINANCE";
@@ -1052,6 +1055,7 @@ export interface operations {
                             active: boolean;
                             createdAt: unknown;
                             updatedAt: unknown;
+                            emailSent: boolean;
                         };
                     };
                 };
