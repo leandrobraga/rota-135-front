@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { pricingQueryKeys } from "#/features/pricing/queries/usePricingQuery";
 import { PricingService } from "#/features/pricing/services/pricing.service";
+import { toast } from "#/lib/toast";
 
 export function useUpdatePricingMutation(occupancyType: string) {
 	const queryClient = useQueryClient();
@@ -10,6 +11,7 @@ export function useUpdatePricingMutation(occupancyType: string) {
 		mutationFn: (price: number) => PricingService.update(occupancyType, price),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: pricingQueryKeys.all });
+			toast.success("Preço atualizado");
 		},
 	});
 }

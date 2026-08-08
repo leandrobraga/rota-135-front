@@ -7,6 +7,7 @@ import {
 	changePasswordSchema,
 } from "#/features/auth/schemas/change-password.schema";
 import { authClient } from "#/lib/auth-client";
+import { toast } from "#/lib/toast";
 
 export function ChangePasswordPanel({
 	open,
@@ -37,6 +38,7 @@ export function ChangePasswordPanel({
 				onSuccess: () => {
 					reset();
 					onOpenChange(false);
+					toast.success("Senha alterada com sucesso");
 				},
 				onError: ({ error }) => {
 					if (error.code === "INVALID_PASSWORD") {

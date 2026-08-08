@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { usersQueryKeys } from "#/features/users/queries/use-users-query";
 import { UsersService } from "#/features/users/services/users.service";
 import type { UpdateUserInput } from "#/features/users/types";
+import { toast } from "#/lib/toast";
 
 export function useUpdateUserMutation(id: string) {
 	const queryClient = useQueryClient();
@@ -11,6 +12,7 @@ export function useUpdateUserMutation(id: string) {
 		mutationFn: (body: UpdateUserInput) => UsersService.update(id, body),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: usersQueryKeys.all });
+			toast.success("Usuário atualizado");
 		},
 	});
 }

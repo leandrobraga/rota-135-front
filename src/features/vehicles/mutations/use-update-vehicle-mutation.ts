@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { vehiclesQueryKeys } from "#/features/vehicles/queries/use-vehicles-query";
 import { VehiclesService } from "#/features/vehicles/services/vehicles.service";
 import type { UpdateVehicleInput } from "#/features/vehicles/types";
+import { toast } from "#/lib/toast";
 
 export function useUpdateVehicleMutation(id: string) {
 	const queryClient = useQueryClient();
@@ -11,6 +12,7 @@ export function useUpdateVehicleMutation(id: string) {
 		mutationFn: (body: UpdateVehicleInput) => VehiclesService.update(id, body),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: vehiclesQueryKeys.all });
+			toast.success("Veículo atualizado");
 		},
 	});
 }
