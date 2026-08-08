@@ -1,5 +1,6 @@
 const messages: Record<string, string> = {
 	INVALID_EMAIL_OR_PASSWORD: "E-mail ou senha inválidos.",
+	INVALID_PASSWORD: "Senha atual incorreta.",
 };
 
 const FALLBACK_MESSAGE = "Não foi possível entrar. Tente novamente.";

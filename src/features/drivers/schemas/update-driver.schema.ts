@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { isValidCpf } from "#/features/drivers/schemas/cpf";
+import { isValidCpf } from "#/lib/validators";
 
 const optionalText = (message: string) =>
 	z

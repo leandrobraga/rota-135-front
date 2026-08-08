@@ -136,6 +136,46 @@ export interface paths {
         patch: operations["patchUsersByIdDeactivate"];
         trace?: never;
     };
+    "/users/{id}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Reativa uma conta de equipe
+         * @description Reativa o acesso de uma conta de equipe previamente desativada.
+         */
+        patch: operations["patchUsersByIdActivate"];
+        trace?: never;
+    };
+    "/users/{id}/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Troca a senha de uma conta de equipe
+         * @description Define uma nova senha para a conta, sem exigir a senha atual (ação executada pelo Admin, não pelo dono da conta). Envia um e-mail avisando o usuário sobre a alteração.
+         */
+        patch: operations["patchUsersByIdPassword"];
+        trace?: never;
+    };
     "/customer/": {
         parameters: {
             query?: never;
@@ -1179,6 +1219,89 @@ export interface operations {
                             active: boolean;
                             createdAt: unknown;
                             updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    patchUsersByIdActivate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            name: string;
+                            email: string;
+                            /** @enum {string} */
+                            role: "ADMIN" | "OPERATOR" | "FINANCE" | "DRIVER" | "CUSTOMER";
+                            phone: string | null;
+                            cpf: string;
+                            active: boolean;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    patchUsersByIdPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    newPassword: string;
+                };
+                "application/x-www-form-urlencoded": {
+                    newPassword: string;
+                };
+                "multipart/form-data": {
+                    newPassword: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            name: string;
+                            email: string;
+                            /** @enum {string} */
+                            role: "ADMIN" | "OPERATOR" | "FINANCE" | "DRIVER" | "CUSTOMER";
+                            phone: string | null;
+                            cpf: string;
+                            active: boolean;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                            emailSent: boolean;
                         };
                     };
                 };

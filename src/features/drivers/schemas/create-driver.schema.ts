@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { isValidCpf } from "#/features/drivers/schemas/cpf";
+import { isValidCpf } from "#/lib/validators";
 
 export const createDriverSchema = z.object({
 	name: z.string().min(1, "Informe o nome"),

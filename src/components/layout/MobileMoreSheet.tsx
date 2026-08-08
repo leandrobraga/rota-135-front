@@ -1,8 +1,10 @@
 import { useRouter } from "@tanstack/react-router";
 import { X } from "lucide-react";
+import { useState } from "react";
 import { NavList } from "#/components/layout/NavList";
 import type { NavItem } from "#/components/layout/nav-config";
 import { UserProfile } from "#/components/layout/UserProfile";
+import { ChangePasswordPanel } from "#/features/auth/components/ChangePasswordPanel";
 import { authClient, useSession } from "#/lib/auth-client";
 
 export function MobileMoreSheet({
@@ -14,6 +16,7 @@ export function MobileMoreSheet({
 }) {
 	const router = useRouter();
 	const { data: session } = useSession();
+	const [changingPassword, setChangingPassword] = useState(false);
 
 	async function handleLogout() {
 		await authClient.signOut();
@@ -46,9 +49,16 @@ export function MobileMoreSheet({
 				</nav>
 
 				<div
-					className="p-4"
+					className="flex flex-col gap-2.5 p-4"
 					style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
 				>
+					<button
+						type="button"
+						onClick={() => setChangingPassword(true)}
+						className="h-11 w-full rounded-[9px] border border-navy-600 text-[13px] font-semibold text-navy-300"
+					>
+						Trocar senha
+					</button>
 					<button
 						type="button"
 						onClick={handleLogout}
@@ -58,6 +68,11 @@ export function MobileMoreSheet({
 					</button>
 				</div>
 			</div>
+
+			<ChangePasswordPanel
+				open={changingPassword}
+				onOpenChange={setChangingPassword}
+			/>
 		</div>
 	);
 }

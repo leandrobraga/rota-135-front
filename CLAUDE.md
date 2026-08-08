@@ -96,6 +96,9 @@ plugin OpenAPI).
 - Schema com coerce OU transform quebra tipo do zodResolver (bug
   conhecido, Zod v4 + @hookform/resolvers). Sempre:
   useForm<z.input<typeof schema>, any, z.output<typeof schema>>({...})
+- Erro de negócio (ConflictError etc.) também pode incluir field opcional
+  no {error:{code,message,field}} — getApiFieldError já trata os dois
+  formatos (validação E negócio) igual.
 
 ## Componentes compartilhados (não recriar por módulo)
 
@@ -137,3 +140,28 @@ Sem shadcn/ui — Tailwind puro. Referência: `design/mock-reference.html`
   fica com dado velho, botão não atualiza).
 - Antes de implementar activate/reactivate num módulo novo: confirmar
   no schema.d.ts que o endpoint .../activate existe. Não presumir.
+
+## E-mail (Resend)
+
+lib/resend.ts tem sendEmail() central — SEMPRE usar essa, nunca
+resend.emails.send() direto (tem redirecionamento de dev embutido via
+EMAIL_DEV_REDIRECT_TO). Envio é sempre aguardado (não fire-and-forget),
+erro capturado sem lançar — resposta da API inclui emailSent:boolean.
+Se emailSent:false, UI mostra aviso destacado (borda #9C4A3E + ícone),
+trava o form, botão vira "Fechar".
+
+## Senha (Better Auth)
+
+- Admin trocar senha de outro: endpoint nosso
+  (PATCH /users/{id}/password), hash via hashPassword de
+  "better-auth/crypto" — NÃO existe API pronta do Better Auth pra isso
+  sem exigir senha atual (por isso é endpoint próprio, não authClient).
+- Usuário trocar a própria: authClient.changePassword({currentPassword,
+  newPassword, revokeOtherSessions:true}) direto, sem endpoint nosso —
+  já vem de fábrica do Better Auth.
+
+## DropdownMenu (radix-ui)
+
+Rodapé do Sidebar (avatar+nome) usa DropdownMenu, mesmo pacote radix-ui
+já instalado. Sempre card branco flutuante com sombra (shadow-lg,
+border, rounded-xl) — nunca depender da cor de fundo de onde abre.
