@@ -496,6 +496,30 @@ export interface paths {
         patch: operations["patchPricingByOccupancyType"];
         trace?: never;
     };
+    "/trip-settings/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consulta as configurações operacionais de corrida
+         * @description Retorna os limiares e janelas de tempo usados nas regras de negócio de corrida (urgência, conflito de agenda, no-show, janelas de reembolso e lembrete).
+         */
+        get: operations["getTrip-settings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Atualiza as configurações operacionais de corrida
+         * @description Atualiza o registro único de configurações operacionais. Restrito a Admin. Afeta corridas a partir da atualização, não corridas já em andamento.
+         */
+        patch: operations["patchTrip-settings"];
+        trace?: never;
+    };
     "/trips/": {
         parameters: {
             query?: never;
@@ -2214,6 +2238,112 @@ export interface operations {
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    "getTrip-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            urgentThresholdHours: number;
+                            scheduleConflictWindowHours: number;
+                            clientNoShowMinutes: number;
+                            driverNoShowMinutes: number;
+                            skipPickupConfirmationMinutes: number;
+                            skipDropoffConfirmationMinutes: number;
+                            fullRefundWindowHours: number;
+                            partialRefundWindowHours: number;
+                            reminderWindowHours: number;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    "patchTrip-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    urgentThresholdHours: number;
+                    scheduleConflictWindowHours: number;
+                    clientNoShowMinutes: number;
+                    driverNoShowMinutes: number;
+                    skipPickupConfirmationMinutes: number;
+                    skipDropoffConfirmationMinutes: number;
+                    fullRefundWindowHours: number;
+                    partialRefundWindowHours: number;
+                    reminderWindowHours: number;
+                };
+                "application/x-www-form-urlencoded": {
+                    urgentThresholdHours: number;
+                    scheduleConflictWindowHours: number;
+                    clientNoShowMinutes: number;
+                    driverNoShowMinutes: number;
+                    skipPickupConfirmationMinutes: number;
+                    skipDropoffConfirmationMinutes: number;
+                    fullRefundWindowHours: number;
+                    partialRefundWindowHours: number;
+                    reminderWindowHours: number;
+                };
+                "multipart/form-data": {
+                    urgentThresholdHours: number;
+                    scheduleConflictWindowHours: number;
+                    clientNoShowMinutes: number;
+                    driverNoShowMinutes: number;
+                    skipPickupConfirmationMinutes: number;
+                    skipDropoffConfirmationMinutes: number;
+                    fullRefundWindowHours: number;
+                    partialRefundWindowHours: number;
+                    reminderWindowHours: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            urgentThresholdHours: number;
+                            scheduleConflictWindowHours: number;
+                            clientNoShowMinutes: number;
+                            driverNoShowMinutes: number;
+                            skipPickupConfirmationMinutes: number;
+                            skipDropoffConfirmationMinutes: number;
+                            fullRefundWindowHours: number;
+                            partialRefundWindowHours: number;
+                            reminderWindowHours: number;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };

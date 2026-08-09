@@ -5,6 +5,7 @@ import {
 	LayoutDashboard,
 	type LucideIcon,
 	Route as RouteIcon,
+	Settings,
 	Tags,
 	UserCircle,
 	UserCog,
@@ -68,6 +69,12 @@ export const navItems: NavItem[] = [
 		icon: Tags,
 	},
 	{ label: "Equipe", to: "/users", allowedRoles: ["ADMIN"], icon: UserCog },
+	{
+		label: "Configurações",
+		to: "/settings",
+		allowedRoles: ["ADMIN"],
+		icon: Settings,
+	},
 	{
 		label: "Pagamentos",
 		to: "/payments",
