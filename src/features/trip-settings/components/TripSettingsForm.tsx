@@ -19,6 +19,7 @@ const TRIP_SETTINGS_FORM_FIELDS = [
 	"fullRefundWindowHours",
 	"partialRefundWindowHours",
 	"reminderWindowHours",
+	"partialRefundPercentage",
 ] as const;
 type TripSettingsFormField = (typeof TRIP_SETTINGS_FORM_FIELDS)[number];
 
@@ -39,6 +40,7 @@ const FIELD_LABELS: Record<TripSettingsFormField, string> = {
 	fullRefundWindowHours: "Janela de reembolso total (horas)",
 	partialRefundWindowHours: "Janela de reembolso parcial (horas)",
 	reminderWindowHours: "Janela de lembrete (horas)",
+	partialRefundPercentage: "% de reembolso parcial",
 };
 
 export function TripSettingsForm() {
@@ -70,6 +72,7 @@ export function TripSettingsForm() {
 					fullRefundWindowHours: tripSettings.fullRefundWindowHours,
 					partialRefundWindowHours: tripSettings.partialRefundWindowHours,
 					reminderWindowHours: tripSettings.reminderWindowHours,
+					partialRefundPercentage: tripSettings.partialRefundPercentage,
 				}
 			: undefined,
 	});

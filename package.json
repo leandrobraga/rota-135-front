@@ -12,7 +12,7 @@
     "preview": "vite preview",
     "format": "biome format",
     "lint": "biome lint",
-    "check": "biome check"
+    "check": "bash -c 'biome check; b=$?; tsc --noEmit; t=$?; exit $((b || t))'"
   },
   "dependencies": {
     "@hookform/resolvers": "5.7.1",

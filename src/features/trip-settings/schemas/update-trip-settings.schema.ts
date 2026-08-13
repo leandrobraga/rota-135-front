@@ -30,6 +30,10 @@ export const updateTripSettingsSchema = z.object({
 	reminderWindowHours: positiveNumber(
 		"Janela de lembrete deve ser maior que zero",
 	),
+	partialRefundPercentage: z.coerce
+		.number()
+		.positive("Percentual de reembolso parcial deve ser maior que zero")
+		.max(100, "Percentual de reembolso parcial deve ser no máximo 100"),
 });
 
 export type UpdateTripSettingsFormData = z.infer<
