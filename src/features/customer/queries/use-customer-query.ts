@@ -8,6 +8,7 @@ export const customerQueryKeys = {
 	list: (params: ListCustomerParams) =>
 		[...customerQueryKeys.all, "list", params] as const,
 	detail: (id: string) => [...customerQueryKeys.all, "detail", id] as const,
+	credits: (id: string) => [...customerQueryKeys.all, "credits", id] as const,
 };
 
 export function useCustomerQuery(params: ListCustomerParams = {}) {

@@ -5,6 +5,8 @@ import { useHookFormMask } from "use-mask-input";
 import type { z } from "zod";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
 import { FormPanel } from "#/components/FormPanel";
+import { SettingsTabs } from "#/components/SettingsTabs";
+import { CustomerCreditsTab } from "#/features/customer/components/CustomerCreditsTab";
 import { useActivateCustomerMutation } from "#/features/customer/mutations/use-activate-customer-mutation";
 import { useDeactivateCustomerMutation } from "#/features/customer/mutations/use-deactivate-customer-mutation";
 import { useUpdateCustomerMutation } from "#/features/customer/mutations/use-update-customer-mutation";
@@ -133,56 +135,75 @@ export function CustomerFormPanel({
 					</>
 				}
 			>
-				<form
-					id="edit-customer-form"
-					onSubmit={handleSubmit(onSubmit)}
-					className="flex flex-col gap-4"
-					noValidate
-				>
-					<TextField
-						id="name"
-						label="Nome"
-						placeholder="Nome completo"
-						error={errors.name?.message}
-						register={register("name")}
-					/>
-					<ReadOnlyField id="email" label="E-mail" value={customer.email} />
-					<ReadOnlyField id="cpf" label="CPF" value={customer.cpf} />
-					<TextField
-						id="phone"
-						label="Telefone"
-						placeholder="(38) 99123-0000"
-						error={errors.phone?.message}
-						register={registerWithMask(
-							"phone",
-							["(99) 9999-9999", "(99) 99999-9999"],
-							{ autoUnmask: true },
-						)}
-					/>
-					<TextField
-						id="emergencyContactName"
-						label="Contato de emergência"
-						placeholder="Nome do contato"
-						error={errors.emergencyContactName?.message}
-						register={register("emergencyContactName")}
-					/>
-					<TextField
-						id="emergencyContactPhone"
-						label="Telefone de emergência"
-						placeholder="(38) 99123-0000"
-						error={errors.emergencyContactPhone?.message}
-						register={registerWithMask(
-							"emergencyContactPhone",
-							["(99) 9999-9999", "(99) 99999-9999"],
-							{ autoUnmask: true },
-						)}
-					/>
-					{errors.root && (
-						<div className="rounded-[10px] bg-[#F1E6CC] px-3.5 py-2.5 text-center text-[13px] font-medium text-[#9C4A3E]">
-							{errors.root.message}
-						</div>
-					)}
-				</form>
+				<SettingsTabs
+					tabs={[
+						{
+							value: "data",
+							label: "Dados",
+							content: (
+								<form
+									id="edit-customer-form"
+									onSubmit={handleSubmit(onSubmit)}
+									className="flex flex-col gap-4"
+									noValidate
+								>
+									<TextField
+										id="name"
+										label="Nome"
+										placeholder="Nome completo"
+										error={errors.name?.message}
+										register={register("name")}
+									/>
+									<ReadOnlyField
+										id="email"
+										label="E-mail"
+										value={customer.email}
+									/>
+									<ReadOnlyField id="cpf" label="CPF" value={customer.cpf} />
+									<TextField
+										id="phone"
+										label="Telefone"
+										placeholder="(38) 99123-0000"
+										error={errors.phone?.message}
+										register={registerWithMask(
+											"phone",
+											["(99) 9999-9999", "(99) 99999-9999"],
+											{ autoUnmask: true },
+										)}
+									/>
+									<TextField
+										id="emergencyContactName"
+										label="Contato de emergência"
+										placeholder="Nome do contato"
+										error={errors.emergencyContactName?.message}
+										register={register("emergencyContactName")}
+									/>
+									<TextField
+										id="emergencyContactPhone"
+										label="Telefone de emergência"
+										placeholder="(38) 99123-0000"
+										error={errors.emergencyContactPhone?.message}
+										register={registerWithMask(
+											"emergencyContactPhone",
+											["(99) 9999-9999", "(99) 99999-9999"],
+											{ autoUnmask: true },
+										)}
+									/>
+									{errors.root && (
+										<div className="rounded-[10px] bg-[#F1E6CC] px-3.5 py-2.5 text-center text-[13px] font-medium text-[#9C4A3E]">
+											{errors.root.message}
+										</div>
+									)}
+								</form>
+							),
+						},
+						{
+							value: "credits",
+							label: "Créditos",
+							content: <CustomerCreditsTab customerId={customer.id} />,
+						},
+					]}
+				/>
 			</FormPanel>
 
 			<ConfirmDialog

@@ -21,3 +21,16 @@ export type UpdateCustomerInput =
 export type ListCustomerParams = NonNullable<
 	operations["getCustomer"]["parameters"]["query"]
 >;
+
+type RawCustomerCredit = ApiResponse<"getCustomerByIdCredits">[number];
+
+// createdAt vem unknown do gerador (Date não representável em JSON Schema)
+// — sabemos que o valor real de fio é string ISO. amount é Decimal no
+// backend, chega como string.
+export type CustomerCredit = Omit<RawCustomerCredit, "createdAt" | "amount"> & {
+	createdAt: string;
+	amount: string;
+};
+
+export type GrantCreditInput =
+	operations["postCustomerByIdCredits"]["requestBody"]["content"]["application/json"];

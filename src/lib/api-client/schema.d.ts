@@ -176,6 +176,50 @@ export interface paths {
         patch: operations["patchUsersByIdPassword"];
         trace?: never;
     };
+    "/customer/{id}/credits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lista créditos de um cliente
+         * @description Lista o histórico de créditos (automáticos por cancelamento ou concedidos manualmente) de um cliente. Acessível a todo o backoffice.
+         */
+        get: operations["getCustomerByIdCredits"];
+        put?: never;
+        /**
+         * Concede crédito manual a um cliente
+         * @description Cria um crédito de gentileza (source ADMIN_GRANT), fora da regra automática de cancelamento. Restrito a Admin e Financeiro. O motivo (`reason`) é obrigatório.
+         */
+        post: operations["postCustomerByIdCredits"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/customer/{id}/credits/{creditId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Exclui um crédito concedido manualmente
+         * @description Exclui definitivamente um crédito. Só permitido para créditos com source ADMIN_GRANT que ainda não foram usados em nenhuma corrida. Restrito a Admin e Financeiro.
+         */
+        delete: operations["deleteCustomerByIdCreditsByCreditId"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/customer/": {
         parameters: {
             query?: never;
@@ -579,7 +623,7 @@ export interface paths {
         head?: never;
         /**
          * Cancela uma corrida
-         * @description Cancela a corrida, se o status atual permitir. O tipo de reembolso (FULL, PARTIAL, CREDIT ou NONE) varia conforme a janela de tempo entre o cancelamento e o horário agendado da corrida — quanto mais próximo do horário, menor o reembolso.
+         * @description Cancela a corrida, se o status atual permitir. A elegibilidade de reembolso (FULL, PARTIAL ou NONE) varia conforme a janela de tempo entre o cancelamento e o horário agendado. Quando elegível (FULL ou PARTIAL), é obrigatório informar `choice` (REFUND ou CREDIT). REFUND dispara reembolso real via AbacatePay (PIX); reembolso parcial exige a chave PIX do cliente (já cadastrada ou informada em `pixKey`/`pixKeyType`). CREDIT gera um crédito interno, sem chamar a AbacatePay. Se o reembolso falhar, a corrida é cancelada normalmente e um aviso é gerado no painel do backoffice.
          */
         patch: operations["patchTripsByIdCancel"];
         trace?: never;
@@ -1327,6 +1371,116 @@ export interface operations {
                             updatedAt: unknown;
                             emailSent: boolean;
                         };
+                    };
+                };
+            };
+        };
+    };
+    getCustomerByIdCredits: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            customerId: string;
+                            amount: unknown;
+                            /** @enum {string} */
+                            source: "CANCELLATION_AUTOMATIC" | "ADMIN_GRANT";
+                            refundId: string | null;
+                            grantedByUserId: string | null;
+                            reason: string | null;
+                            usedInTripId: string | null;
+                            createdAt: unknown;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    postCustomerByIdCredits: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    amount: number;
+                    reason: string;
+                };
+                "application/x-www-form-urlencoded": {
+                    amount: number;
+                    reason: string;
+                };
+                "multipart/form-data": {
+                    amount: number;
+                    reason: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            customerId: string;
+                            amount: unknown;
+                            /** @enum {string} */
+                            source: "CANCELLATION_AUTOMATIC" | "ADMIN_GRANT";
+                            refundId: string | null;
+                            grantedByUserId: string | null;
+                            reason: string | null;
+                            usedInTripId: string | null;
+                            createdAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    deleteCustomerByIdCreditsByCreditId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                creditId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: null;
                     };
                 };
             };
@@ -2272,6 +2426,7 @@ export interface operations {
                             skipDropoffConfirmationMinutes: number;
                             fullRefundWindowHours: number;
                             partialRefundWindowHours: number;
+                            partialRefundPercentage: number;
                             reminderWindowHours: number;
                             createdAt: unknown;
                             updatedAt: unknown;
@@ -2299,6 +2454,7 @@ export interface operations {
                     skipDropoffConfirmationMinutes: number;
                     fullRefundWindowHours: number;
                     partialRefundWindowHours: number;
+                    partialRefundPercentage: number;
                     reminderWindowHours: number;
                 };
                 "application/x-www-form-urlencoded": {
@@ -2310,6 +2466,7 @@ export interface operations {
                     skipDropoffConfirmationMinutes: number;
                     fullRefundWindowHours: number;
                     partialRefundWindowHours: number;
+                    partialRefundPercentage: number;
                     reminderWindowHours: number;
                 };
                 "multipart/form-data": {
@@ -2321,6 +2478,7 @@ export interface operations {
                     skipDropoffConfirmationMinutes: number;
                     fullRefundWindowHours: number;
                     partialRefundWindowHours: number;
+                    partialRefundPercentage: number;
                     reminderWindowHours: number;
                 };
             };
@@ -2343,6 +2501,7 @@ export interface operations {
                             skipDropoffConfirmationMinutes: number;
                             fullRefundWindowHours: number;
                             partialRefundWindowHours: number;
+                            partialRefundPercentage: number;
                             reminderWindowHours: number;
                             createdAt: unknown;
                             updatedAt: unknown;
@@ -2542,7 +2701,31 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    choice?: "REFUND" | "CREDIT";
+                    pixKey?: string;
+                    /** @enum {string} */
+                    pixKeyType?: "CPF" | "CNPJ" | "PHONE" | "EMAIL" | "RANDOM" | "BR_CODE";
+                };
+                "application/x-www-form-urlencoded": {
+                    /** @enum {string} */
+                    choice?: "REFUND" | "CREDIT";
+                    pixKey?: string;
+                    /** @enum {string} */
+                    pixKeyType?: "CPF" | "CNPJ" | "PHONE" | "EMAIL" | "RANDOM" | "BR_CODE";
+                };
+                "multipart/form-data": {
+                    /** @enum {string} */
+                    choice?: "REFUND" | "CREDIT";
+                    pixKey?: string;
+                    /** @enum {string} */
+                    pixKeyType?: "CPF" | "CNPJ" | "PHONE" | "EMAIL" | "RANDOM" | "BR_CODE";
+                };
+            };
+        };
         responses: {
             /** @description Response for status 200 */
             200: {
@@ -3223,7 +3406,7 @@ export interface operations {
                             data: {
                                 id: string;
                                 /** @enum {string} */
-                                type: "NEW_TRIP_AWAITING_ASSIGNMENT" | "TRIP_CANCELLED";
+                                type: "NEW_TRIP_AWAITING_ASSIGNMENT" | "TRIP_CANCELLED" | "REFUND_FAILED";
                                 message: string;
                                 tripId: string | null;
                                 read: boolean;
@@ -3259,7 +3442,7 @@ export interface operations {
                         data: {
                             id: string;
                             /** @enum {string} */
-                            type: "NEW_TRIP_AWAITING_ASSIGNMENT" | "TRIP_CANCELLED";
+                            type: "NEW_TRIP_AWAITING_ASSIGNMENT" | "TRIP_CANCELLED" | "REFUND_FAILED";
                             message: string;
                             tripId: string | null;
                             read: boolean;

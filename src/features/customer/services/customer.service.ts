@@ -1,6 +1,8 @@
 import type {
 	Customer,
+	CustomerCredit,
 	CustomerListResponse,
+	GrantCreditInput,
 	ListCustomerParams,
 	UpdateCustomerInput,
 } from "#/features/customer/types";
@@ -43,5 +45,29 @@ export const CustomerService = {
 			params: { path: { id } },
 		});
 		return data as Customer;
+	},
+
+	listCredits: async (customerId: string): Promise<CustomerCredit[]> => {
+		const { data } = await typedApi.get("/customer/{id}/credits", {
+			params: { path: { id: customerId } },
+		});
+		return data as CustomerCredit[];
+	},
+
+	grantCredit: async (
+		customerId: string,
+		body: GrantCreditInput,
+	): Promise<CustomerCredit> => {
+		const { data } = await typedApi.post("/customer/{id}/credits", {
+			params: { path: { id: customerId } },
+			json: body,
+		});
+		return data as CustomerCredit;
+	},
+
+	deleteCredit: async (customerId: string, creditId: string): Promise<void> => {
+		await typedApi.delete("/customer/{id}/credits/{creditId}", {
+			params: { path: { id: customerId, creditId } },
+		});
 	},
 };
