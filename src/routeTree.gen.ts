@@ -20,9 +20,10 @@ import { Route as AuthedPaymentsRouteImport } from './routes/_authed/payments'
 import { Route as AuthedPayoutsRouteImport } from './routes/_authed/payouts'
 import { Route as AuthedPricingRouteImport } from './routes/_authed/pricing'
 import { Route as AuthedSettingsRouteImport } from './routes/_authed/settings'
-import { Route as AuthedTripsRouteImport } from './routes/_authed/trips'
 import { Route as AuthedUsersRouteImport } from './routes/_authed/users'
 import { Route as AuthedVehiclesRouteImport } from './routes/_authed/vehicles'
+import { Route as AuthedTripsIndexRouteImport } from './routes/_authed/trips/index'
+import { Route as AuthedTripsTripIdRouteImport } from './routes/_authed/trips/$tripId'
 
 const AuthedRoute = AuthedRouteImport.update({
   id: '/_authed',
@@ -78,11 +79,6 @@ const AuthedSettingsRoute = AuthedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedTripsRoute = AuthedTripsRouteImport.update({
-  id: '/trips',
-  path: '/trips',
-  getParentRoute: () => AuthedRoute,
-} as any)
 const AuthedUsersRoute = AuthedUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -91,6 +87,16 @@ const AuthedUsersRoute = AuthedUsersRouteImport.update({
 const AuthedVehiclesRoute = AuthedVehiclesRouteImport.update({
   id: '/vehicles',
   path: '/vehicles',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedTripsIndexRoute = AuthedTripsIndexRouteImport.update({
+  id: '/trips/',
+  path: '/trips/',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedTripsTripIdRoute = AuthedTripsTripIdRouteImport.update({
+  id: '/trips/$tripId',
+  path: '/trips/$tripId',
   getParentRoute: () => AuthedRoute,
 } as any)
 
@@ -105,9 +111,10 @@ export interface FileRoutesByFullPath {
   '/payouts': typeof AuthedPayoutsRoute
   '/pricing': typeof AuthedPricingRoute
   '/settings': typeof AuthedSettingsRoute
-  '/trips': typeof AuthedTripsRoute
   '/users': typeof AuthedUsersRoute
   '/vehicles': typeof AuthedVehiclesRoute
+  '/trips/$tripId': typeof AuthedTripsTripIdRoute
+  '/trips/': typeof AuthedTripsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -119,10 +126,11 @@ export interface FileRoutesByTo {
   '/payouts': typeof AuthedPayoutsRoute
   '/pricing': typeof AuthedPricingRoute
   '/settings': typeof AuthedSettingsRoute
-  '/trips': typeof AuthedTripsRoute
   '/users': typeof AuthedUsersRoute
   '/vehicles': typeof AuthedVehiclesRoute
   '/': typeof AuthedIndexRoute
+  '/trips/$tripId': typeof AuthedTripsTripIdRoute
+  '/trips': typeof AuthedTripsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -136,10 +144,11 @@ export interface FileRoutesById {
   '/_authed/payouts': typeof AuthedPayoutsRoute
   '/_authed/pricing': typeof AuthedPricingRoute
   '/_authed/settings': typeof AuthedSettingsRoute
-  '/_authed/trips': typeof AuthedTripsRoute
   '/_authed/users': typeof AuthedUsersRoute
   '/_authed/vehicles': typeof AuthedVehiclesRoute
   '/_authed/': typeof AuthedIndexRoute
+  '/_authed/trips/$tripId': typeof AuthedTripsTripIdRoute
+  '/_authed/trips/': typeof AuthedTripsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -154,9 +163,10 @@ export interface FileRouteTypes {
     | '/payouts'
     | '/pricing'
     | '/settings'
-    | '/trips'
     | '/users'
     | '/vehicles'
+    | '/trips/$tripId'
+    | '/trips/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -168,10 +178,11 @@ export interface FileRouteTypes {
     | '/payouts'
     | '/pricing'
     | '/settings'
-    | '/trips'
     | '/users'
     | '/vehicles'
     | '/'
+    | '/trips/$tripId'
+    | '/trips'
   id:
     | '__root__'
     | '/_authed'
@@ -184,10 +195,11 @@ export interface FileRouteTypes {
     | '/_authed/payouts'
     | '/_authed/pricing'
     | '/_authed/settings'
-    | '/_authed/trips'
     | '/_authed/users'
     | '/_authed/vehicles'
     | '/_authed/'
+    | '/_authed/trips/$tripId'
+    | '/_authed/trips/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -274,13 +286,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedSettingsRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/trips': {
-      id: '/_authed/trips'
-      path: '/trips'
-      fullPath: '/trips'
-      preLoaderRoute: typeof AuthedTripsRouteImport
-      parentRoute: typeof AuthedRoute
-    }
     '/_authed/users': {
       id: '/_authed/users'
       path: '/users'
@@ -295,6 +300,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedVehiclesRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/trips/': {
+      id: '/_authed/trips/'
+      path: '/trips'
+      fullPath: '/trips/'
+      preLoaderRoute: typeof AuthedTripsIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/trips/$tripId': {
+      id: '/_authed/trips/$tripId'
+      path: '/trips/$tripId'
+      fullPath: '/trips/$tripId'
+      preLoaderRoute: typeof AuthedTripsTripIdRouteImport
+      parentRoute: typeof AuthedRoute
+    }
   }
 }
 
@@ -307,10 +326,11 @@ interface AuthedRouteChildren {
   AuthedPayoutsRoute: typeof AuthedPayoutsRoute
   AuthedPricingRoute: typeof AuthedPricingRoute
   AuthedSettingsRoute: typeof AuthedSettingsRoute
-  AuthedTripsRoute: typeof AuthedTripsRoute
   AuthedUsersRoute: typeof AuthedUsersRoute
   AuthedVehiclesRoute: typeof AuthedVehiclesRoute
   AuthedIndexRoute: typeof AuthedIndexRoute
+  AuthedTripsTripIdRoute: typeof AuthedTripsTripIdRoute
+  AuthedTripsIndexRoute: typeof AuthedTripsIndexRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
@@ -322,10 +342,11 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedPayoutsRoute: AuthedPayoutsRoute,
   AuthedPricingRoute: AuthedPricingRoute,
   AuthedSettingsRoute: AuthedSettingsRoute,
-  AuthedTripsRoute: AuthedTripsRoute,
   AuthedUsersRoute: AuthedUsersRoute,
   AuthedVehiclesRoute: AuthedVehiclesRoute,
   AuthedIndexRoute: AuthedIndexRoute,
+  AuthedTripsTripIdRoute: AuthedTripsTripIdRoute,
+  AuthedTripsIndexRoute: AuthedTripsIndexRoute,
 }
 
 const AuthedRouteWithChildren =

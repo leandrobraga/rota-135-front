@@ -573,7 +573,7 @@ export interface paths {
         };
         /**
          * Lista corridas
-         * @description Lista corridas. Clientes veem apenas as próprias corridas; Admin/Operador veem todas.
+         * @description Lista paginada de corridas. Clientes veem apenas as próprias corridas; Admin/Operador veem todas. Aceita busca opcional via `search` (nome, e-mail ou CPF do cliente, endereço de embarque ou desembarque) e filtro opcional por `status`.
          */
         get: operations["getTrips"];
         put?: never;
@@ -686,6 +686,26 @@ export interface paths {
          * @description Chamado pelo Customer ao final da corrida, confirmando o desembarque. Transiciona a corrida para COMPLETED e libera o repasse ao motorista.
          */
         patch: operations["patchTripsByIdConfirm-dropoff"];
+        trace?: never;
+    };
+    "/trips/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Disponibilidade de motoristas e veículos pra um horário
+         * @description Retorna todos os motoristas aprovados e ativos e todos os veículos ativos, cada um marcado como disponível ou não pra `scheduledAt`, considerando a janela de conflito configurada em TripSettings.
+         */
+        get: operations["getTripsAvailability"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/trips/{id}/assign": {
@@ -1517,6 +1537,8 @@ export interface operations {
                                 active: boolean;
                                 emergencyContactName: string | null;
                                 emergencyContactPhone: string | null;
+                                pixKey: string | null;
+                                pixKeyType: ("CPF" | "CNPJ" | "PHONE" | "EMAIL" | "RANDOM" | "BR_CODE") | null;
                                 createdAt: unknown;
                                 updatedAt: unknown;
                             }[];
@@ -1557,6 +1579,8 @@ export interface operations {
                             active: boolean;
                             emergencyContactName: string | null;
                             emergencyContactPhone: string | null;
+                            pixKey: string | null;
+                            pixKeyType: ("CPF" | "CNPJ" | "PHONE" | "EMAIL" | "RANDOM" | "BR_CODE") | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -1614,6 +1638,8 @@ export interface operations {
                             active: boolean;
                             emergencyContactName: string | null;
                             emergencyContactPhone: string | null;
+                            pixKey: string | null;
+                            pixKeyType: ("CPF" | "CNPJ" | "PHONE" | "EMAIL" | "RANDOM" | "BR_CODE") | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -1650,6 +1676,8 @@ export interface operations {
                             active: boolean;
                             emergencyContactName: string | null;
                             emergencyContactPhone: string | null;
+                            pixKey: string | null;
+                            pixKeyType: ("CPF" | "CNPJ" | "PHONE" | "EMAIL" | "RANDOM" | "BR_CODE") | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -1686,6 +1714,8 @@ export interface operations {
                             active: boolean;
                             emergencyContactName: string | null;
                             emergencyContactPhone: string | null;
+                            pixKey: string | null;
+                            pixKeyType: ("CPF" | "CNPJ" | "PHONE" | "EMAIL" | "RANDOM" | "BR_CODE") | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -2513,7 +2543,12 @@ export interface operations {
     };
     getTrips: {
         parameters: {
-            query?: never;
+            query?: {
+                search?: string;
+                status?: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                page?: number;
+                pageSize?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2528,27 +2563,44 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
-                            id: string;
-                            clientId: string;
-                            driverId: string | null;
-                            vehicleId: string | null;
-                            /** @enum {string} */
-                            occupancyType: "SEAT" | "FULL_CAR";
-                            price: unknown;
-                            pickupAddress: string;
-                            dropoffAddress: string;
-                            scheduledAt: unknown;
-                            /** @enum {string} */
-                            bookingType: "NORMAL" | "URGENT";
-                            /** @enum {string} */
-                            status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
-                            cancelledAt: unknown | null;
-                            refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
-                            noShowBy: ("CLIENT" | "DRIVER") | null;
-                            reminderSentAt: unknown | null;
-                            createdAt: unknown;
-                            updatedAt: unknown;
-                        }[];
+                            data: {
+                                id: string;
+                                clientId: string;
+                                client: {
+                                    id: string;
+                                    name: string;
+                                };
+                                driverId: string | null;
+                                driver: {
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                vehicleId: string | null;
+                                vehicle: {
+                                    id: string;
+                                    plate: string;
+                                } | null;
+                                /** @enum {string} */
+                                occupancyType: "SEAT" | "FULL_CAR";
+                                price: unknown;
+                                pickupAddress: string;
+                                dropoffAddress: string;
+                                scheduledAt: unknown;
+                                /** @enum {string} */
+                                bookingType: "NORMAL" | "URGENT";
+                                /** @enum {string} */
+                                status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                                cancelledAt: unknown | null;
+                                refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
+                                noShowBy: ("CLIENT" | "DRIVER") | null;
+                                reminderSentAt: unknown | null;
+                                createdAt: unknown;
+                                updatedAt: unknown;
+                            }[];
+                            page: number;
+                            pageSize: number;
+                            total: number;
+                        };
                     };
                 };
             };
@@ -2570,6 +2622,7 @@ export interface operations {
                     dropoffAddress: string;
                     /** Format: date-time */
                     scheduledAt: string;
+                    vehicleId: string;
                     clientId?: string;
                 };
                 "application/x-www-form-urlencoded": {
@@ -2579,6 +2632,7 @@ export interface operations {
                     dropoffAddress: string;
                     /** Format: date-time */
                     scheduledAt: string;
+                    vehicleId: string;
                     clientId?: string;
                 };
                 "multipart/form-data": {
@@ -2588,6 +2642,7 @@ export interface operations {
                     dropoffAddress: string;
                     /** Format: date-time */
                     scheduledAt: string;
+                    vehicleId: string;
                     clientId?: string;
                 };
             };
@@ -2604,8 +2659,20 @@ export interface operations {
                             trip: {
                                 id: string;
                                 clientId: string;
+                                client: {
+                                    id: string;
+                                    name: string;
+                                };
                                 driverId: string | null;
+                                driver: {
+                                    id: string;
+                                    name: string;
+                                } | null;
                                 vehicleId: string | null;
+                                vehicle: {
+                                    id: string;
+                                    plate: string;
+                                } | null;
                                 /** @enum {string} */
                                 occupancyType: "SEAT" | "FULL_CAR";
                                 price: unknown;
@@ -2656,8 +2723,20 @@ export interface operations {
                         data: {
                             id: string;
                             clientId: string;
+                            client: {
+                                id: string;
+                                name: string;
+                            };
                             driverId: string | null;
+                            driver: {
+                                id: string;
+                                name: string;
+                            } | null;
                             vehicleId: string | null;
+                            vehicle: {
+                                id: string;
+                                plate: string;
+                            } | null;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -2685,6 +2764,14 @@ export interface operations {
                                 dropoffConfirmationSkipped: boolean;
                                 createdAt: unknown;
                                 updatedAt: unknown;
+                            } | null;
+                            refund: {
+                                /** @enum {string} */
+                                status: "PENDING" | "COMPLETED" | "FAILED";
+                                /** @enum {string} */
+                                method: "REFUND_FULL" | "REFUND_PARTIAL" | "CREDIT";
+                                amount: unknown;
+                                failureReason: string | null;
                             } | null;
                         };
                     };
@@ -2737,8 +2824,20 @@ export interface operations {
                         data: {
                             id: string;
                             clientId: string;
+                            client: {
+                                id: string;
+                                name: string;
+                            };
                             driverId: string | null;
+                            driver: {
+                                id: string;
+                                name: string;
+                            } | null;
                             vehicleId: string | null;
+                            vehicle: {
+                                id: string;
+                                plate: string;
+                            } | null;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -2782,8 +2881,20 @@ export interface operations {
                         data: {
                             id: string;
                             clientId: string;
+                            client: {
+                                id: string;
+                                name: string;
+                            };
                             driverId: string | null;
+                            driver: {
+                                id: string;
+                                name: string;
+                            } | null;
                             vehicleId: string | null;
+                            vehicle: {
+                                id: string;
+                                plate: string;
+                            } | null;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -2827,8 +2938,20 @@ export interface operations {
                         data: {
                             id: string;
                             clientId: string;
+                            client: {
+                                id: string;
+                                name: string;
+                            };
                             driverId: string | null;
+                            driver: {
+                                id: string;
+                                name: string;
+                            } | null;
                             vehicleId: string | null;
+                            vehicle: {
+                                id: string;
+                                plate: string;
+                            } | null;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -2872,8 +2995,20 @@ export interface operations {
                         data: {
                             id: string;
                             clientId: string;
+                            client: {
+                                id: string;
+                                name: string;
+                            };
                             driverId: string | null;
+                            driver: {
+                                id: string;
+                                name: string;
+                            } | null;
                             vehicleId: string | null;
+                            vehicle: {
+                                id: string;
+                                plate: string;
+                            } | null;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -2896,6 +3031,44 @@ export interface operations {
             };
         };
     };
+    getTripsAvailability: {
+        parameters: {
+            query: {
+                scheduledAt: string;
+                excludeTripId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            drivers: {
+                                id: string;
+                                name: string;
+                                available: boolean;
+                            }[];
+                            vehicles: {
+                                id: string;
+                                plate: string;
+                                brand: string;
+                                model: string;
+                                available: boolean;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+    };
     patchTripsByIdAssign: {
         parameters: {
             query?: never;
@@ -2909,15 +3082,15 @@ export interface operations {
             content: {
                 "application/json": {
                     driverId: string;
-                    vehicleId: string;
+                    vehicleId?: string;
                 };
                 "application/x-www-form-urlencoded": {
                     driverId: string;
-                    vehicleId: string;
+                    vehicleId?: string;
                 };
                 "multipart/form-data": {
                     driverId: string;
-                    vehicleId: string;
+                    vehicleId?: string;
                 };
             };
         };
@@ -2932,8 +3105,20 @@ export interface operations {
                         data: {
                             id: string;
                             clientId: string;
+                            client: {
+                                id: string;
+                                name: string;
+                            };
                             driverId: string | null;
+                            driver: {
+                                id: string;
+                                name: string;
+                            } | null;
                             vehicleId: string | null;
+                            vehicle: {
+                                id: string;
+                                plate: string;
+                            } | null;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -2977,8 +3162,20 @@ export interface operations {
                         data: {
                             id: string;
                             clientId: string;
+                            client: {
+                                id: string;
+                                name: string;
+                            };
                             driverId: string | null;
+                            driver: {
+                                id: string;
+                                name: string;
+                            } | null;
                             vehicleId: string | null;
+                            vehicle: {
+                                id: string;
+                                plate: string;
+                            } | null;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3022,8 +3219,20 @@ export interface operations {
                         data: {
                             id: string;
                             clientId: string;
+                            client: {
+                                id: string;
+                                name: string;
+                            };
                             driverId: string | null;
+                            driver: {
+                                id: string;
+                                name: string;
+                            } | null;
                             vehicleId: string | null;
+                            vehicle: {
+                                id: string;
+                                plate: string;
+                            } | null;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3067,8 +3276,20 @@ export interface operations {
                         data: {
                             id: string;
                             clientId: string;
+                            client: {
+                                id: string;
+                                name: string;
+                            };
                             driverId: string | null;
+                            driver: {
+                                id: string;
+                                name: string;
+                            } | null;
                             vehicleId: string | null;
+                            vehicle: {
+                                id: string;
+                                plate: string;
+                            } | null;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3112,8 +3333,20 @@ export interface operations {
                         data: {
                             id: string;
                             clientId: string;
+                            client: {
+                                id: string;
+                                name: string;
+                            };
                             driverId: string | null;
+                            driver: {
+                                id: string;
+                                name: string;
+                            } | null;
                             vehicleId: string | null;
+                            vehicle: {
+                                id: string;
+                                plate: string;
+                            } | null;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3157,8 +3390,20 @@ export interface operations {
                         data: {
                             id: string;
                             clientId: string;
+                            client: {
+                                id: string;
+                                name: string;
+                            };
                             driverId: string | null;
+                            driver: {
+                                id: string;
+                                name: string;
+                            } | null;
                             vehicleId: string | null;
+                            vehicle: {
+                                id: string;
+                                plate: string;
+                            } | null;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;

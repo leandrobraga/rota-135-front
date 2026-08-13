@@ -59,11 +59,13 @@ async function request<Path extends string, Method extends string, Operation>(
 	{ params, json, ...kyOptions }: RequestOptions<Operation> = {},
 ): Promise<SuccessResponseOf<Operation>> {
 	const url = resolvePath(path, params);
+	const searchParams = resolveSearchParams(params);
 
 	return api(url, {
 		...kyOptions,
 		method,
 		json,
+		searchParams,
 	}).json();
 }
 
@@ -81,6 +83,21 @@ function resolvePath(path: string, params: unknown): string {
 		: path;
 
 	return resolved.replace(/^\//, "");
+}
+
+function resolveSearchParams(
+	params: unknown,
+): Record<string, string> | undefined {
+	const query = (params as { query?: Record<string, unknown> } | undefined)
+		?.query;
+	if (!query) return undefined;
+
+	const entries = Object.entries(query).filter(
+		([, v]) => v !== undefined && v !== null,
+	);
+	if (entries.length === 0) return undefined;
+
+	return Object.fromEntries(entries.map(([k, v]) => [k, String(v)]));
 }
 
 export const typedApi = {

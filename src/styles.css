@@ -75,3 +75,8 @@ body {
   to { transform: translateX(100%); }
 }
 
+@keyframes progressShrink {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
