@@ -573,7 +573,7 @@ export interface paths {
         };
         /**
          * Lista corridas
-         * @description Lista paginada de corridas. Clientes veem apenas as próprias corridas; Admin/Operador veem todas. Aceita busca opcional via `search` (nome, e-mail ou CPF do cliente, endereço de embarque ou desembarque) e filtro opcional por `status`.
+         * @description Lista paginada de corridas. Clientes veem apenas as próprias corridas; Admin/Operador veem todas. Aceita busca opcional via `search` (nome, e-mail ou CPF do cliente, endereço de embarque ou desembarque), filtro opcional por `status` e filtro opcional de intervalo por `scheduledAt` via `from`/`to`.
          */
         get: operations["getTrips"];
         put?: never;
@@ -2549,6 +2549,8 @@ export interface operations {
                 status?: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                 page?: number;
                 pageSize?: number;
+                from?: string;
+                to?: string;
             };
             header?: never;
             path?: never;

@@ -15,6 +15,7 @@ import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
 import { Route as AuthedCustomerRouteImport } from './routes/_authed/customer'
 import { Route as AuthedDevFormpanelTestRouteImport } from './routes/_authed/dev-formpanel-test'
 import { Route as AuthedDriversRouteImport } from './routes/_authed/drivers'
+import { Route as AuthedFleetAvailabilityRouteImport } from './routes/_authed/fleet-availability'
 import { Route as AuthedNotificationsRouteImport } from './routes/_authed/notifications'
 import { Route as AuthedPaymentsRouteImport } from './routes/_authed/payments'
 import { Route as AuthedPayoutsRouteImport } from './routes/_authed/payouts'
@@ -52,6 +53,11 @@ const AuthedDevFormpanelTestRoute = AuthedDevFormpanelTestRouteImport.update({
 const AuthedDriversRoute = AuthedDriversRouteImport.update({
   id: '/drivers',
   path: '/drivers',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedFleetAvailabilityRoute = AuthedFleetAvailabilityRouteImport.update({
+  id: '/fleet-availability',
+  path: '/fleet-availability',
   getParentRoute: () => AuthedRoute,
 } as any)
 const AuthedNotificationsRoute = AuthedNotificationsRouteImport.update({
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/customer': typeof AuthedCustomerRoute
   '/dev-formpanel-test': typeof AuthedDevFormpanelTestRoute
   '/drivers': typeof AuthedDriversRoute
+  '/fleet-availability': typeof AuthedFleetAvailabilityRoute
   '/notifications': typeof AuthedNotificationsRoute
   '/payments': typeof AuthedPaymentsRoute
   '/payouts': typeof AuthedPayoutsRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/customer': typeof AuthedCustomerRoute
   '/dev-formpanel-test': typeof AuthedDevFormpanelTestRoute
   '/drivers': typeof AuthedDriversRoute
+  '/fleet-availability': typeof AuthedFleetAvailabilityRoute
   '/notifications': typeof AuthedNotificationsRoute
   '/payments': typeof AuthedPaymentsRoute
   '/payouts': typeof AuthedPayoutsRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/_authed/customer': typeof AuthedCustomerRoute
   '/_authed/dev-formpanel-test': typeof AuthedDevFormpanelTestRoute
   '/_authed/drivers': typeof AuthedDriversRoute
+  '/_authed/fleet-availability': typeof AuthedFleetAvailabilityRoute
   '/_authed/notifications': typeof AuthedNotificationsRoute
   '/_authed/payments': typeof AuthedPaymentsRoute
   '/_authed/payouts': typeof AuthedPayoutsRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/customer'
     | '/dev-formpanel-test'
     | '/drivers'
+    | '/fleet-availability'
     | '/notifications'
     | '/payments'
     | '/payouts'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/customer'
     | '/dev-formpanel-test'
     | '/drivers'
+    | '/fleet-availability'
     | '/notifications'
     | '/payments'
     | '/payouts'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/_authed/customer'
     | '/_authed/dev-formpanel-test'
     | '/_authed/drivers'
+    | '/_authed/fleet-availability'
     | '/_authed/notifications'
     | '/_authed/payments'
     | '/_authed/payouts'
@@ -249,6 +261,13 @@ declare module '@tanstack/react-router' {
       path: '/drivers'
       fullPath: '/drivers'
       preLoaderRoute: typeof AuthedDriversRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/fleet-availability': {
+      id: '/_authed/fleet-availability'
+      path: '/fleet-availability'
+      fullPath: '/fleet-availability'
+      preLoaderRoute: typeof AuthedFleetAvailabilityRouteImport
       parentRoute: typeof AuthedRoute
     }
     '/_authed/notifications': {
@@ -321,6 +340,7 @@ interface AuthedRouteChildren {
   AuthedCustomerRoute: typeof AuthedCustomerRoute
   AuthedDevFormpanelTestRoute: typeof AuthedDevFormpanelTestRoute
   AuthedDriversRoute: typeof AuthedDriversRoute
+  AuthedFleetAvailabilityRoute: typeof AuthedFleetAvailabilityRoute
   AuthedNotificationsRoute: typeof AuthedNotificationsRoute
   AuthedPaymentsRoute: typeof AuthedPaymentsRoute
   AuthedPayoutsRoute: typeof AuthedPayoutsRoute
@@ -337,6 +357,7 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedCustomerRoute: AuthedCustomerRoute,
   AuthedDevFormpanelTestRoute: AuthedDevFormpanelTestRoute,
   AuthedDriversRoute: AuthedDriversRoute,
+  AuthedFleetAvailabilityRoute: AuthedFleetAvailabilityRoute,
   AuthedNotificationsRoute: AuthedNotificationsRoute,
   AuthedPaymentsRoute: AuthedPaymentsRoute,
   AuthedPayoutsRoute: AuthedPayoutsRoute,
