@@ -1425,6 +1425,7 @@ export interface operations {
                             reason: string | null;
                             usedInTripId: string | null;
                             createdAt: unknown;
+                            remainingAmount: unknown;
                         }[];
                     };
                 };
@@ -2598,7 +2599,7 @@ export interface operations {
                                     /** @enum {string} */
                                     status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                     /** @enum {string} */
-                                    method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                    method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                                 } | null;
                                 createdAt: unknown;
                                 updatedAt: unknown;
@@ -2630,6 +2631,7 @@ export interface operations {
                     scheduledAt: string;
                     vehicleId: string;
                     clientId?: string;
+                    creditIds?: string[];
                 };
                 "application/x-www-form-urlencoded": {
                     /** @enum {string} */
@@ -2640,6 +2642,7 @@ export interface operations {
                     scheduledAt: string;
                     vehicleId: string;
                     clientId?: string;
+                    creditIds?: string[];
                 };
                 "multipart/form-data": {
                     /** @enum {string} */
@@ -2650,6 +2653,7 @@ export interface operations {
                     scheduledAt: string;
                     vehicleId: string;
                     clientId?: string;
+                    creditIds?: string[];
                 };
             };
         };
@@ -2697,16 +2701,22 @@ export interface operations {
                                     /** @enum {string} */
                                     status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                     /** @enum {string} */
-                                    method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                    method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                                 } | null;
                                 createdAt: unknown;
                                 updatedAt: unknown;
                             };
                             payment: {
+                                /** @constant */
+                                type: "PIX";
                                 paymentId: string;
                                 brCode: string;
                                 brCodeBase64: string;
                                 expiresAt: string;
+                            } | {
+                                /** @constant */
+                                type: "CREDIT";
+                                paymentId: string;
                             };
                         };
                     };
@@ -2767,7 +2777,7 @@ export interface operations {
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
-                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
@@ -2874,7 +2884,7 @@ export interface operations {
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
-                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
@@ -2937,7 +2947,7 @@ export interface operations {
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
-                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
@@ -3000,7 +3010,7 @@ export interface operations {
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
-                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
@@ -3063,7 +3073,7 @@ export interface operations {
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
-                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
@@ -3179,7 +3189,7 @@ export interface operations {
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
-                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
@@ -3242,7 +3252,7 @@ export interface operations {
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
-                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
@@ -3305,7 +3315,7 @@ export interface operations {
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
-                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
@@ -3368,7 +3378,7 @@ export interface operations {
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
-                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
@@ -3431,7 +3441,7 @@ export interface operations {
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
-                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
@@ -3494,7 +3504,7 @@ export interface operations {
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
-                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
                             createdAt: unknown;
                             updatedAt: unknown;

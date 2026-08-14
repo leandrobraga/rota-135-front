@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { FormPanel } from "#/components/FormPanel";
+import { CreditSelector } from "#/features/customer/components/CreditSelector";
+import { useCustomerCreditsQuery } from "#/features/customer/queries/use-customer-credits-query";
 import type { Customer } from "#/features/customer/types";
 import { usePricingQuery } from "#/features/pricing/queries/usePricingQuery";
 import { ClientPicker } from "#/features/trips/components/ClientPicker";
@@ -31,6 +33,28 @@ function formatExpiresAt(expiresAt: string): string {
 	);
 }
 
+function calculateCreditConsumption(
+	price: number,
+	creditIds: string[],
+	credits: { id: string; remainingAmount: string }[],
+): { consumed: { id: string; amount: number }[]; remaining: number } {
+	let left = price;
+	const consumed: { id: string; amount: number }[] = [];
+
+	for (const id of creditIds) {
+		if (left <= 0) break;
+		const credit = credits.find((c) => c.id === id);
+		if (!credit) continue;
+
+		const available = Number(credit.remainingAmount);
+		const amount = Math.min(available, left);
+		consumed.push({ id, amount });
+		left -= amount;
+	}
+
+	return { consumed, remaining: Math.max(left, 0) };
+}
+
 export function CreateTripForStaffDialog({
 	open,
 	onOpenChange,
@@ -41,8 +65,10 @@ export function CreateTripForStaffDialog({
 	const createMutation = useCreateTripMutation();
 	const { data: pricing } = usePricingQuery();
 	const [client, setClient] = useState<Customer | null>(null);
+	const [creditIds, setCreditIds] = useState<string[]>([]);
 	const [created, setCreated] = useState<CreateTripResponse | null>(null);
 	const [copied, setCopied] = useState(false);
+	const { data: credits } = useCustomerCreditsQuery(client?.id ?? "");
 
 	const {
 		register,
@@ -70,16 +96,30 @@ export function CreateTripForStaffDialog({
 		(item) => item.occupancyType === occupancyType,
 	)?.price;
 
+	const creditConsumption =
+		selectedPrice !== undefined && creditIds.length > 0
+			? calculateCreditConsumption(
+					Number(selectedPrice),
+					creditIds,
+					credits ?? [],
+				)
+			: null;
+
 	async function onSubmit(values: CreateTripForStaffFormData) {
 		try {
-			const result = await createMutation.mutateAsync(values);
+			const body = {
+				...values,
+				creditIds: values.creditIds?.length ? values.creditIds : undefined,
+			};
+			const result = await createMutation.mutateAsync(body);
 			setCreated(result);
 		} catch (error) {
 			const { field, message } = getApiFieldError(error);
 			if (
 				field === "clientId" ||
 				field === "occupancyType" ||
-				field === "vehicleId"
+				field === "vehicleId" ||
+				field === "creditIds"
 			) {
 				setError(field, { message });
 			} else {
@@ -92,6 +132,7 @@ export function CreateTripForStaffDialog({
 		if (!nextOpen) {
 			reset();
 			setClient(null);
+			setCreditIds([]);
 			setCreated(null);
 			setCopied(false);
 		}
@@ -99,7 +140,7 @@ export function CreateTripForStaffDialog({
 	}
 
 	async function handleCopyCode() {
-		if (!created) return;
+		if (!created || created.payment.type !== "PIX") return;
 		await navigator.clipboard.writeText(created.payment.brCode);
 		setCopied(true);
 		setTimeout(() => setCopied(false), 2000);
@@ -109,7 +150,13 @@ export function CreateTripForStaffDialog({
 		<FormPanel
 			open={open}
 			onOpenChange={handleOpenChange}
-			title={created ? "Corrida criada — repasse o pagamento" : "Nova corrida"}
+			title={
+				created
+					? created.payment.type === "CREDIT"
+						? "Corrida criada"
+						: "Corrida criada — repasse o pagamento"
+					: "Nova corrida"
+			}
 			footer={
 				created ? (
 					<button
@@ -141,50 +188,58 @@ export function CreateTripForStaffDialog({
 						<TripBookingTypeBadge bookingType={created.trip.bookingType} />
 					</div>
 
-					<div className="flex justify-center">
-						<img
-							src={created.payment.brCodeBase64}
-							alt="QR Code do pagamento PIX"
-							className="size-[200px] rounded-xl border border-neutral-300"
-						/>
-					</div>
+					{created.payment.type === "CREDIT" ? (
+						<p className="text-[14.5px] text-navy-800">
+							Corrida paga integralmente com crédito do cliente.
+						</p>
+					) : (
+						<>
+							<div className="flex justify-center">
+								<img
+									src={created.payment.brCodeBase64}
+									alt="QR Code do pagamento PIX"
+									className="size-[200px] rounded-xl border border-neutral-300"
+								/>
+							</div>
 
-					<div>
-						<label
-							htmlFor="pix-copy-paste"
-							className="mb-1.5 block text-[12px] font-bold tracking-[0.3px] text-neutral-600"
-						>
-							CÓDIGO COPIA E COLA
-						</label>
-						<div className="flex gap-2">
-							<input
-								id="pix-copy-paste"
-								readOnly
-								value={created.payment.brCode}
-								className="h-[46px] w-full flex-1 rounded-[10px] border-[1.5px] border-neutral-300 bg-cream-100 px-4 font-medium text-[13px] text-navy-800 outline-none"
-							/>
-							<button
-								type="button"
-								onClick={handleCopyCode}
-								className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[10px] border-[1.5px] border-neutral-300 text-navy-800"
-							>
-								{copied ? (
-									<Check size={18} className="text-sage-500" />
-								) : (
-									<Copy size={18} />
+							<div>
+								<label
+									htmlFor="pix-copy-paste"
+									className="mb-1.5 block text-[12px] font-bold tracking-[0.3px] text-neutral-600"
+								>
+									CÓDIGO COPIA E COLA
+								</label>
+								<div className="flex gap-2">
+									<input
+										id="pix-copy-paste"
+										readOnly
+										value={created.payment.brCode}
+										className="h-[46px] w-full flex-1 rounded-[10px] border-[1.5px] border-neutral-300 bg-cream-100 px-4 font-medium text-[13px] text-navy-800 outline-none"
+									/>
+									<button
+										type="button"
+										onClick={handleCopyCode}
+										className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[10px] border-[1.5px] border-neutral-300 text-navy-800"
+									>
+										{copied ? (
+											<Check size={18} className="text-sage-500" />
+										) : (
+											<Copy size={18} />
+										)}
+									</button>
+								</div>
+								{copied && (
+									<span className="mt-1.5 block text-[12px] text-sage-500">
+										Copiado!
+									</span>
 								)}
-							</button>
-						</div>
-						{copied && (
-							<span className="mt-1.5 block text-[12px] text-sage-500">
-								Copiado!
-							</span>
-						)}
-					</div>
+							</div>
 
-					<p className="text-[13.5px] text-neutral-600">
-						Válido até {formatExpiresAt(created.payment.expiresAt)}
-					</p>
+							<p className="text-[13.5px] text-neutral-600">
+								Válido até {formatExpiresAt(created.payment.expiresAt)}
+							</p>
+						</>
+					)}
 				</div>
 			) : (
 				<form
@@ -201,9 +256,11 @@ export function CreateTripForStaffDialog({
 							selected={client}
 							onSelect={(customer) => {
 								setClient(customer);
+								setCreditIds([]);
 								setValue("clientId", customer?.userId ?? "", {
 									shouldValidate: true,
 								});
+								setValue("creditIds", []);
 							}}
 						/>
 						{errors.clientId && (
@@ -215,6 +272,15 @@ export function CreateTripForStaffDialog({
 
 					{client && (
 						<>
+							<CreditSelector
+								customerId={client.id}
+								value={creditIds}
+								onChange={(ids) => {
+									setCreditIds(ids);
+									setValue("creditIds", ids);
+								}}
+							/>
+
 							<div>
 								<label
 									htmlFor="occupancyType"
@@ -247,6 +313,23 @@ export function CreateTripForStaffDialog({
 									</span>
 								)}
 							</div>
+
+							{creditConsumption && (
+								<div className="rounded-[10px] border border-neutral-300 p-3">
+									<p className="text-[13px] text-neutral-600">
+										Consome{" "}
+										{creditConsumption.consumed
+											.map((c) => formatCurrencyDisplay(c.amount))
+											.join(" + ")}{" "}
+										de crédito.
+									</p>
+									<p className="mt-1 font-bold text-[14px] text-navy-800">
+										{creditConsumption.remaining > 0
+											? `Restante via PIX: ${formatCurrencyDisplay(creditConsumption.remaining)}`
+											: "Pago integralmente com crédito"}
+									</p>
+								</div>
+							)}
 
 							<div>
 								<label
