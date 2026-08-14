@@ -4,6 +4,7 @@ import { useState } from "react";
 import { RefreshProgressBar } from "#/components/RefreshProgressBar";
 import { AssignTripDialog } from "#/features/trips/components/AssignTripDialog";
 import { CancelTripDialog } from "#/features/trips/components/CancelTripDialog";
+import { PaymentStatusBadge } from "#/features/trips/components/PaymentStatusBadge";
 import { TripBookingTypeBadge } from "#/features/trips/components/TripBookingTypeBadge";
 import { TripCheckpointTimeline } from "#/features/trips/components/TripCheckpointTimeline";
 import { TripRefundInfo } from "#/features/trips/components/TripRefundInfo";
@@ -59,6 +60,7 @@ export function TripDetailPage({ tripId }: { tripId: string }) {
 					<div className="flex items-center gap-1.5">
 						<TripStatusBadge status={trip.status} />
 						<TripBookingTypeBadge bookingType={trip.bookingType} />
+						<PaymentStatusBadge payment={trip.payment} />
 					</div>
 				</div>
 				<RefreshProgressBar live={live} dataUpdatedAt={dataUpdatedAt} />

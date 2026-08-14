@@ -143,7 +143,7 @@ export function CreateTripForStaffDialog({
 
 					<div className="flex justify-center">
 						<img
-							src={`data:image/png;base64,${created.payment.brCodeBase64}`}
+							src={created.payment.brCodeBase64}
 							alt="QR Code do pagamento PIX"
 							className="size-[200px] rounded-xl border border-neutral-300"
 						/>
@@ -201,7 +201,7 @@ export function CreateTripForStaffDialog({
 							selected={client}
 							onSelect={(customer) => {
 								setClient(customer);
-								setValue("clientId", customer?.id ?? "", {
+								setValue("clientId", customer?.userId ?? "", {
 									shouldValidate: true,
 								});
 							}}

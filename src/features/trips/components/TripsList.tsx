@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { DataTable, type DataTableColumn } from "#/components/DataTable";
+import { PaymentStatusBadge } from "#/features/trips/components/PaymentStatusBadge";
 import { TripBookingTypeBadge } from "#/features/trips/components/TripBookingTypeBadge";
 import { TripStatusBadge } from "#/features/trips/components/TripStatusBadge";
 import { useTripsQuery } from "#/features/trips/queries/use-trips-query";
@@ -75,6 +76,7 @@ export function TripsList() {
 				<span className="flex flex-wrap items-center gap-1.5">
 					<TripStatusBadge status={trip.status} />
 					<TripBookingTypeBadge bookingType={trip.bookingType} />
+					<PaymentStatusBadge payment={trip.payment} />
 				</span>
 			),
 		},

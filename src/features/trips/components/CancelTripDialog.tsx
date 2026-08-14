@@ -1,10 +1,18 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useHookFormMask } from "use-mask-input";
+import type { z } from "zod";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
 import { FormPanel } from "#/components/FormPanel";
 import { useCustomerByIdQuery } from "#/features/customer/queries/use-customer-by-id-query";
 import { useTripSettingsQuery } from "#/features/trip-settings/queries/use-trip-settings-query";
 import { calculateRefundEligibility } from "#/features/trips/lib/calculate-refund-eligibility";
 import { useCancelTripMutation } from "#/features/trips/mutations/use-cancel-trip-mutation";
+import {
+	type CancelTripFormData,
+	cancelTripSchema,
+} from "#/features/trips/schemas/cancel-trip.schema";
 import type { CancelTripInput, Trip } from "#/features/trips/types";
 import { getApiErrorMessage } from "#/lib/api-error";
 import { formatCurrencyDisplay } from "#/lib/formatters";
@@ -103,10 +111,28 @@ function EligibleCancelDialog({
 
 	const [choice, setChoice] = useState<"REFUND" | "CREDIT">("REFUND");
 	const [useNewPixKey, setUseNewPixKey] = useState(false);
-	const [pixKey, setPixKey] = useState("");
-	const [pixKeyType, setPixKeyType] =
-		useState<NonNullable<CancelTripInput["pixKeyType"]>>("CPF");
-	const [error, setError] = useState<string | null>(null);
+	const [rootError, setRootError] = useState<string | null>(null);
+
+	const {
+		register,
+		handleSubmit,
+		reset,
+		watch,
+		setValue,
+		formState: { errors, isSubmitting },
+	} = useForm<
+		z.input<typeof cancelTripSchema>,
+		// biome-ignore lint/suspicious/noExplicitAny: RHF context generic, unused
+		any,
+		z.output<typeof cancelTripSchema>
+	>({
+		resolver: zodResolver(cancelTripSchema),
+		mode: "onChange",
+		defaultValues: { pixKeyType: "CPF" },
+	});
+	const registerWithMask = useHookFormMask(register);
+
+	const pixKeyType = watch("pixKeyType") ?? "CPF";
 
 	const needsPixKey = choice === "REFUND" && eligibility === "PARTIAL";
 	const savedPixKey = customer?.pixKey ?? null;
@@ -118,27 +144,41 @@ function EligibleCancelDialog({
 	).toString();
 
 	function resetAndClose() {
+		reset({ pixKeyType: "CPF" });
 		setChoice("REFUND");
 		setUseNewPixKey(false);
-		setPixKey("");
-		setPixKeyType("CPF");
-		setError(null);
+		setRootError(null);
 		onOpenChange(false);
 	}
 
-	function handleSubmit() {
-		setError(null);
+	async function onSubmit(values: CancelTripFormData) {
+		setRootError(null);
 
 		const body: CancelTripInput = { choice };
 		if (needsNewPixKeyInput) {
-			body.pixKey = pixKey;
-			body.pixKeyType = pixKeyType;
+			body.pixKey = values.pixKey;
+			body.pixKeyType = values.pixKeyType;
 		}
 
 		cancelMutation.mutate(body, {
 			onSuccess: () => resetAndClose(),
-			onError: (err) => setError(getApiErrorMessage(err)),
+			onError: (err) => setRootError(getApiErrorMessage(err)),
 		});
+	}
+
+	function pixKeyRegister() {
+		if (pixKeyType === "CPF") {
+			return registerWithMask("pixKey", "cpf", { autoUnmask: true });
+		}
+		if (pixKeyType === "CNPJ") {
+			return registerWithMask("pixKey", "cnpj", { autoUnmask: true });
+		}
+		if (pixKeyType === "PHONE") {
+			return registerWithMask("pixKey", ["(99) 9999-9999", "(99) 99999-9999"], {
+				autoUnmask: true,
+			});
+		}
+		return register("pixKey");
 	}
 
 	return (
@@ -149,11 +189,12 @@ function EligibleCancelDialog({
 			footer={
 				<>
 					<button
-						type="button"
-						onClick={handleSubmit}
+						type="submit"
+						form="cancel-trip-form"
 						disabled={
 							cancelMutation.isPending ||
-							(needsNewPixKeyInput && pixKey.trim() === "")
+							isSubmitting ||
+							(needsNewPixKeyInput && !watch("pixKey"))
 						}
 						className="h-[46px] rounded-[10px] bg-[#9C4A3E] font-bold text-[14.5px] text-white disabled:cursor-not-allowed disabled:opacity-60"
 					>
@@ -169,7 +210,12 @@ function EligibleCancelDialog({
 				</>
 			}
 		>
-			<div className="flex flex-col gap-5">
+			<form
+				id="cancel-trip-form"
+				onSubmit={handleSubmit(onSubmit)}
+				className="flex flex-col gap-5"
+				noValidate
+			>
 				<p className="text-[13.5px] text-neutral-600">
 					Esta corrida é elegível para{" "}
 					{eligibility === "FULL" ? "reembolso total" : "reembolso parcial"}.
@@ -239,15 +285,10 @@ function EligibleCancelDialog({
 									</label>
 									<select
 										id="cancel-pix-key-type"
-										value={pixKeyType}
-										onChange={(event) =>
-											setPixKeyType(
-												event.target.value as NonNullable<
-													CancelTripInput["pixKeyType"]
-												>,
-											)
-										}
 										className="h-11 w-full rounded-[10px] border-[1.5px] border-neutral-300 px-4 font-medium text-[14.5px] text-navy-800 outline-none focus:border-gold-500"
+										{...register("pixKeyType", {
+											onChange: () => setValue("pixKey", ""),
+										})}
 									>
 										{Object.entries(PIX_KEY_TYPE_LABEL).map(
 											([value, label]) => (
@@ -267,24 +308,28 @@ function EligibleCancelDialog({
 									</label>
 									<input
 										id="cancel-pix-key"
-										type="text"
-										value={pixKey}
-										onChange={(event) => setPixKey(event.target.value)}
+										type={pixKeyType === "EMAIL" ? "email" : "text"}
 										placeholder="Chave PIX do cliente"
 										className="h-[46px] w-full rounded-[10px] border-[1.5px] border-neutral-300 px-4 font-medium text-[14.5px] text-navy-800 outline-none focus:border-gold-500"
+										{...pixKeyRegister()}
 									/>
+									{errors.pixKey && (
+										<span className="mt-1.5 block text-[12px] leading-none text-[#9C4A3E]">
+											{errors.pixKey.message}
+										</span>
+									)}
 								</div>
 							</>
 						)}
 					</div>
 				)}
 
-				{error && (
+				{rootError && (
 					<div className="rounded-[10px] bg-[#F1E6CC] px-3.5 py-2.5 text-center text-[13px] font-medium text-[#9C4A3E]">
-						{error}
+						{rootError}
 					</div>
 				)}
-			</div>
+			</form>
 		</FormPanel>
 	);
 }

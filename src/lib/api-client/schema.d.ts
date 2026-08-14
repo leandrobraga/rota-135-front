@@ -2594,6 +2594,12 @@ export interface operations {
                                 refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                                 noShowBy: ("CLIENT" | "DRIVER") | null;
                                 reminderSentAt: unknown | null;
+                                payment: {
+                                    /** @enum {string} */
+                                    status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                    /** @enum {string} */
+                                    method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                } | null;
                                 createdAt: unknown;
                                 updatedAt: unknown;
                             }[];
@@ -2687,6 +2693,12 @@ export interface operations {
                                 refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                                 noShowBy: ("CLIENT" | "DRIVER") | null;
                                 reminderSentAt: unknown | null;
+                                payment: {
+                                    /** @enum {string} */
+                                    status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                    /** @enum {string} */
+                                    method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                                } | null;
                                 createdAt: unknown;
                                 updatedAt: unknown;
                             };
@@ -2751,6 +2763,12 @@ export interface operations {
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
+                            payment: {
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                /** @enum {string} */
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                            } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                             checkpoint: {
@@ -2852,6 +2870,12 @@ export interface operations {
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
+                            payment: {
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                /** @enum {string} */
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                            } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -2909,6 +2933,12 @@ export interface operations {
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
+                            payment: {
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                /** @enum {string} */
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                            } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -2966,6 +2996,12 @@ export interface operations {
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
+                            payment: {
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                /** @enum {string} */
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                            } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -3023,6 +3059,12 @@ export interface operations {
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
+                            payment: {
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                /** @enum {string} */
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                            } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -3133,6 +3175,12 @@ export interface operations {
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
+                            payment: {
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                /** @enum {string} */
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                            } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -3190,6 +3238,12 @@ export interface operations {
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
+                            payment: {
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                /** @enum {string} */
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                            } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -3247,6 +3301,12 @@ export interface operations {
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
+                            payment: {
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                /** @enum {string} */
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                            } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -3304,6 +3364,12 @@ export interface operations {
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
+                            payment: {
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                /** @enum {string} */
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                            } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -3361,6 +3427,12 @@ export interface operations {
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
+                            payment: {
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                /** @enum {string} */
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                            } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
@@ -3418,6 +3490,12 @@ export interface operations {
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
+                            payment: {
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                /** @enum {string} */
+                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD";
+                            } | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
