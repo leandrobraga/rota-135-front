@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PaymentsPage } from "#/features/payments/pages/PaymentsPage";
 import { requireRole } from "#/lib/route-guards";
 
 export const Route = createFileRoute("/_authed/payments")({
@@ -6,7 +7,3 @@ export const Route = createFileRoute("/_authed/payments")({
 		requireRole(location.href, ["ADMIN", "FINANCE"]),
 	component: PaymentsPage,
 });
-
-function PaymentsPage() {
-	return <h1>Pagamentos (em construção)</h1>;
-}

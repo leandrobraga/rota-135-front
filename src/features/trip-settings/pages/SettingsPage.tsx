@@ -1,4 +1,5 @@
 import { SettingsTabs } from "#/components/SettingsTabs";
+import { PaymentSettingsForm } from "#/features/payment-settings/components/PaymentSettingsForm";
 import { TripSettingsForm } from "#/features/trip-settings/components/TripSettingsForm";
 
 export function SettingsPage() {
@@ -11,6 +12,11 @@ export function SettingsPage() {
 			<SettingsTabs
 				tabs={[
 					{ value: "trips", label: "Corridas", content: <TripSettingsForm /> },
+					{
+						value: "payments",
+						label: "Pagamentos",
+						content: <PaymentSettingsForm />,
+					},
 				]}
 			/>
 		</div>

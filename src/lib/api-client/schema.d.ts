@@ -828,6 +828,30 @@ export interface paths {
         patch: operations["patchTripsByIdSkip-dropoff-confirmation"];
         trace?: never;
     };
+    "/payment-settings/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consulta as configurações de pagamento
+         * @description Retorna os limiares de tempo usados pra alertar sobre pagamentos e reembolsos pendentes.
+         */
+        get: operations["getPayment-settings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Atualiza as configurações de pagamento
+         * @description Atualiza o registro único de configurações de pagamento. Restrito a Admin.
+         */
+        patch: operations["patchPayment-settings"];
+        trace?: never;
+    };
     "/payments/": {
         parameters: {
             query?: never;
@@ -862,6 +886,46 @@ export interface paths {
          * @description Recebido diretamente pela AbacatePay a cada mudança de status de uma cobrança PIX (confirmado, reembolsado, contestado). A assinatura é validada via header x-webhook-signature antes de processar o evento; sem sessão de usuário, não é chamado pelo frontend.
          */
         post: operations["postPaymentsWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payments/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lista pagamentos pendentes
+         * @description Lista todos os Payment com status PENDING, com o cliente da corrida embutido. Sem filtro de tempo — o frontend decide visualmente o que está atrasado, comparando com PaymentSettings.
+         */
+        get: operations["getPaymentsPending"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payments/{id}/reconcile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Força reconciliação manual de um pagamento
+         * @description Consulta o status atual dessa cobrança PIX direto na AbacatePay. Se estiver paga, processa a confirmação (mesmo caminho do webhook). Devolve o Payment atualizado.
+         */
+        post: operations["postPaymentsByIdReconcile"];
         delete?: never;
         options?: never;
         head?: never;
@@ -926,6 +990,46 @@ export interface paths {
          * @description Registra o pagamento manual do repasse ao motorista, informando o valor. Só é permitido em repasses com status RELEASED — a corrida precisa ter sido concluída antes. O valor não é calculado automaticamente pelo sistema, é digitado pelo Financeiro.
          */
         patch: operations["patchPayoutsByIdPay"];
+        trace?: never;
+    };
+    "/refunds/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lista reembolsos pendentes
+         * @description Lista todos os Refund com status PENDING, com o cliente da corrida embutido. Sem filtro de tempo — o frontend decide visualmente o que está atrasado, comparando com PaymentSettings.
+         */
+        get: operations["getRefundsPending"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/refunds/{id}/reconcile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Força reconciliação manual de um reembolso
+         * @description Consulta o status atual dessa transferência PIX direto na AbacatePay e aplica o resultado (COMPLETED, PENDING ou FAILED). Devolve o Refund atualizado.
+         */
+        post: operations["postRefundsByIdReconcile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/notifications/push-token": {
@@ -3516,6 +3620,77 @@ export interface operations {
             };
         };
     };
+    "getPayment-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            paymentPendingAlertHours: number;
+                            refundPendingAlertHours: number;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    "patchPayment-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    paymentPendingAlertHours: number;
+                    refundPendingAlertHours: number;
+                };
+                "application/x-www-form-urlencoded": {
+                    paymentPendingAlertHours: number;
+                    refundPendingAlertHours: number;
+                };
+                "multipart/form-data": {
+                    paymentPendingAlertHours: number;
+                    refundPendingAlertHours: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            paymentPendingAlertHours: number;
+                            refundPendingAlertHours: number;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
     getPayments: {
         parameters: {
             query?: never;
@@ -3559,6 +3734,82 @@ export interface operations {
                     "application/json": {
                         data: {
                             received: boolean;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    getPaymentsPending: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            tripId: string;
+                            /** @enum {string} */
+                            method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
+                            /** @enum {string} */
+                            status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                            amount: unknown;
+                            gatewayReference: string | null;
+                            paidAt: unknown | null;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                            trip: {
+                                client: {
+                                    id: string;
+                                    name: string;
+                                };
+                            };
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    postPaymentsByIdReconcile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            tripId: string;
+                            /** @enum {string} */
+                            method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
+                            /** @enum {string} */
+                            status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                            amount: unknown;
+                            gatewayReference: string | null;
+                            paidAt: unknown | null;
+                            createdAt: unknown;
+                            updatedAt: unknown;
                         };
                     };
                 };
@@ -3677,6 +3928,82 @@ export interface operations {
                             amount: unknown | null;
                             releasedAt: unknown | null;
                             paidAt: unknown | null;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    getRefundsPending: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            tripId: string;
+                            /** @enum {string} */
+                            method: "REFUND_FULL" | "REFUND_PARTIAL" | "CREDIT";
+                            amount: unknown;
+                            /** @enum {string} */
+                            status: "PENDING" | "COMPLETED" | "FAILED";
+                            failureReason: string | null;
+                            abacatePayTransactionId: string | null;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                            trip: {
+                                client: {
+                                    id: string;
+                                    name: string;
+                                };
+                            };
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    postRefundsByIdReconcile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            tripId: string;
+                            /** @enum {string} */
+                            method: "REFUND_FULL" | "REFUND_PARTIAL" | "CREDIT";
+                            amount: unknown;
+                            /** @enum {string} */
+                            status: "PENDING" | "COMPLETED" | "FAILED";
+                            failureReason: string | null;
+                            abacatePayTransactionId: string | null;
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
