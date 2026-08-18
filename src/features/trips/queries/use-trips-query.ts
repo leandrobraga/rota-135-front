@@ -8,15 +8,6 @@ export const tripsQueryKeys = {
 	list: (params: ListTripsParams) =>
 		[...tripsQueryKeys.all, "list", params] as const,
 	detail: (id: string) => [...tripsQueryKeys.all, "detail", id] as const,
-	range: (from: string, to: string) =>
-		[...tripsQueryKeys.all, "range", from, to] as const,
-	availability: (scheduledAt: string, excludeTripId?: string) =>
-		[
-			...tripsQueryKeys.all,
-			"availability",
-			scheduledAt,
-			excludeTripId,
-		] as const,
 };
 
 export function useTripsQuery(params: ListTripsParams = {}) {

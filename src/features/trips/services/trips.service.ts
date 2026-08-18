@@ -16,16 +16,6 @@ export const TripsService = {
 		return data;
 	},
 
-	listByDateRange: async (
-		from: string,
-		to: string,
-	): Promise<TripsListResponse> => {
-		const { data } = await typedApi.get("/trips/", {
-			params: { query: { from, to, pageSize: 500 } },
-		});
-		return data;
-	},
-
 	getById: async (id: string): Promise<Trip> => {
 		const { data } = await typedApi.get("/trips/{id}", {
 			params: { path: { id } },

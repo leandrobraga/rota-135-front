@@ -1,5 +1,4 @@
-import { Link } from "@tanstack/react-router";
-import type { Trip } from "#/features/trips/types";
+import type { TripSchedule } from "#/features/trip-schedules/types";
 
 export type AvailabilityView = "day" | "week" | "month";
 
@@ -9,9 +8,14 @@ export type AvailabilityResource = {
 };
 
 type Block = {
-	trip: Trip;
+	tripSchedule: TripSchedule;
 	start: number;
 	end: number;
+};
+
+const DIRECTION_LABELS: Record<TripSchedule["direction"], string> = {
+	MOC_TO_BH: "Montes Claros → Belo Horizonte",
+	BH_TO_MOC: "Belo Horizonte → Montes Claros",
 };
 
 function getViewStart(baseDate: Date, view: AvailabilityView): Date {
@@ -83,7 +87,7 @@ function getAxisLabels(
 }
 
 function blocksForResource(
-	trips: Trip[],
+	tripSchedules: TripSchedule[],
 	resourceId: string,
 	windowHours: number,
 	viewStart: Date,
@@ -93,14 +97,16 @@ function blocksForResource(
 	const viewStartMs = viewStart.getTime();
 	const viewEndMs = viewEnd.getTime();
 
-	return trips
+	return tripSchedules
 		.filter(
-			(trip) => trip.driverId === resourceId || trip.vehicleId === resourceId,
+			(tripSchedule) =>
+				tripSchedule.driver.id === resourceId ||
+				tripSchedule.vehicle.id === resourceId,
 		)
-		.map((trip) => {
-			const scheduledMs = new Date(trip.scheduledAt).getTime();
+		.map((tripSchedule) => {
+			const scheduledMs = new Date(tripSchedule.scheduledAt).getTime();
 			return {
-				trip,
+				tripSchedule,
 				start: Math.max(scheduledMs - windowMs, viewStartMs),
 				end: Math.min(scheduledMs + windowMs, viewEndMs),
 			};
@@ -110,13 +116,13 @@ function blocksForResource(
 
 export function AvailabilityGrid({
 	resources,
-	trips,
+	tripSchedules,
 	scheduleConflictWindowHours,
 	view,
 	baseDate,
 }: {
 	resources: AvailabilityResource[];
-	trips: Trip[];
+	tripSchedules: TripSchedule[];
 	scheduleConflictWindowHours: number;
 	view: AvailabilityView;
 	baseDate: Date;
@@ -152,7 +158,7 @@ export function AvailabilityGrid({
 				<div className="flex flex-col">
 					{resources.map((resource) => {
 						const blocks = blocksForResource(
-							trips,
+							tripSchedules,
 							resource.id,
 							scheduleConflictWindowHours,
 							viewStart,
@@ -174,17 +180,14 @@ export function AvailabilityGrid({
 										const width = ((block.end - block.start) / totalMs) * 100;
 
 										return (
-											<Link
-												key={block.trip.id}
-												to="/trips/$tripId"
-												params={{ tripId: block.trip.id }}
-												target="_blank"
-												className="absolute top-0 h-full min-w-[3px] rounded-[6px] bg-gold-500 opacity-80 transition-opacity hover:opacity-100"
+											<div
+												key={block.tripSchedule.id}
+												className="absolute top-0 h-full min-w-[3px] rounded-[6px] bg-gold-500 opacity-80"
 												style={{
 													left: `${left}%`,
 													width: `${Math.max(width, 0.5)}%`,
 												}}
-												title={`${block.trip.client.name} · ${new Date(block.trip.scheduledAt).toLocaleString("pt-BR")}`}
+												title={`${DIRECTION_LABELS[block.tripSchedule.direction]} · ${new Date(block.tripSchedule.scheduledAt).toLocaleString("pt-BR")}`}
 											/>
 										);
 									})}

@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useDriversQuery } from "#/features/drivers/queries/use-drivers-query";
+import { useTripSchedulesQuery } from "#/features/trip-schedules/queries/use-trip-schedules-query";
 import { useTripSettingsQuery } from "#/features/trip-settings/queries/use-trip-settings-query";
 import {
 	AvailabilityGrid,
 	type AvailabilityView,
 } from "#/features/trips/components/AvailabilityGrid";
-import { useTripsByDateRangeQuery } from "#/features/trips/queries/use-trips-by-range-query";
-import type { Trip } from "#/features/trips/types";
 import { useVehiclesQuery } from "#/features/vehicles/queries/use-vehicles-query";
 
 const VIEW_OPTIONS: { value: AvailabilityView; label: string }[] = [
@@ -14,29 +13,6 @@ const VIEW_OPTIONS: { value: AvailabilityView; label: string }[] = [
 	{ value: "week", label: "Semana" },
 	{ value: "month", label: "Mês" },
 ];
-
-function getRangeBounds(
-	baseDate: Date,
-	view: AvailabilityView,
-): { from: string; to: string } {
-	const start = new Date(baseDate);
-	start.setHours(0, 0, 0, 0);
-
-	if (view === "week") {
-		const day = start.getDay();
-		const diffToMonday = day === 0 ? -6 : 1 - day;
-		start.setDate(start.getDate() + diffToMonday);
-	} else if (view === "month") {
-		start.setDate(1);
-	}
-
-	const end = new Date(start);
-	if (view === "day") end.setDate(end.getDate() + 1);
-	else if (view === "week") end.setDate(end.getDate() + 7);
-	else end.setMonth(end.getMonth() + 1);
-
-	return { from: start.toISOString(), to: end.toISOString() };
-}
 
 function toDateInputValue(date: Date): string {
 	const year = date.getFullYear();
@@ -53,9 +29,8 @@ export function FleetAvailabilityPage() {
 	const { data: driversData } = useDriversQuery({ pageSize: 500 });
 	const { data: vehiclesData } = useVehiclesQuery({ pageSize: 500 });
 
-	const { from, to } = getRangeBounds(baseDate, view);
-	const { data: tripsData, isLoading: isLoadingTrips } =
-		useTripsByDateRangeQuery({ from, to });
+	const { data: tripSchedulesData, isLoading: isLoadingTripSchedules } =
+		useTripSchedulesQuery({ status: "ACTIVE", pageSize: 500 });
 
 	const driverResources = (driversData?.data ?? [])
 		.filter((driver) => driver.active && driver.approvalStatus === "APPROVED")
@@ -65,7 +40,7 @@ export function FleetAvailabilityPage() {
 		.filter((vehicle) => vehicle.active)
 		.map((vehicle) => ({ id: vehicle.id, label: vehicle.plate }));
 
-	const trips = (tripsData?.data ?? []) as Trip[];
+	const tripSchedules = tripSchedulesData?.data ?? [];
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -116,7 +91,7 @@ export function FleetAvailabilityPage() {
 				</div>
 			</div>
 
-			{isLoadingTrips || !tripSettings ? (
+			{isLoadingTripSchedules || !tripSettings ? (
 				<p className="py-8 text-center text-[13.5px] text-neutral-600">
 					Carregando...
 				</p>
@@ -128,7 +103,7 @@ export function FleetAvailabilityPage() {
 						</h2>
 						<AvailabilityGrid
 							resources={driverResources}
-							trips={trips}
+							tripSchedules={tripSchedules}
 							scheduleConflictWindowHours={
 								tripSettings.scheduleConflictWindowHours
 							}
@@ -143,7 +118,7 @@ export function FleetAvailabilityPage() {
 						</h2>
 						<AvailabilityGrid
 							resources={vehicleResources}
-							trips={trips}
+							tripSchedules={tripSchedules}
 							scheduleConflictWindowHours={
 								tripSettings.scheduleConflictWindowHours
 							}
