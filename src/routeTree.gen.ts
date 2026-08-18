@@ -21,6 +21,7 @@ import { Route as AuthedPaymentsRouteImport } from './routes/_authed/payments'
 import { Route as AuthedPayoutsRouteImport } from './routes/_authed/payouts'
 import { Route as AuthedPricingRouteImport } from './routes/_authed/pricing'
 import { Route as AuthedSettingsRouteImport } from './routes/_authed/settings'
+import { Route as AuthedTripSchedulesRouteImport } from './routes/_authed/trip-schedules'
 import { Route as AuthedUsersRouteImport } from './routes/_authed/users'
 import { Route as AuthedVehiclesRouteImport } from './routes/_authed/vehicles'
 import { Route as AuthedTripsIndexRouteImport } from './routes/_authed/trips/index'
@@ -85,6 +86,11 @@ const AuthedSettingsRoute = AuthedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedTripSchedulesRoute = AuthedTripSchedulesRouteImport.update({
+  id: '/trip-schedules',
+  path: '/trip-schedules',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthedUsersRoute = AuthedUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/payouts': typeof AuthedPayoutsRoute
   '/pricing': typeof AuthedPricingRoute
   '/settings': typeof AuthedSettingsRoute
+  '/trip-schedules': typeof AuthedTripSchedulesRoute
   '/users': typeof AuthedUsersRoute
   '/vehicles': typeof AuthedVehiclesRoute
   '/trips/$tripId': typeof AuthedTripsTripIdRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/payouts': typeof AuthedPayoutsRoute
   '/pricing': typeof AuthedPricingRoute
   '/settings': typeof AuthedSettingsRoute
+  '/trip-schedules': typeof AuthedTripSchedulesRoute
   '/users': typeof AuthedUsersRoute
   '/vehicles': typeof AuthedVehiclesRoute
   '/': typeof AuthedIndexRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/_authed/payouts': typeof AuthedPayoutsRoute
   '/_authed/pricing': typeof AuthedPricingRoute
   '/_authed/settings': typeof AuthedSettingsRoute
+  '/_authed/trip-schedules': typeof AuthedTripSchedulesRoute
   '/_authed/users': typeof AuthedUsersRoute
   '/_authed/vehicles': typeof AuthedVehiclesRoute
   '/_authed/': typeof AuthedIndexRoute
@@ -173,6 +182,7 @@ export interface FileRouteTypes {
     | '/payouts'
     | '/pricing'
     | '/settings'
+    | '/trip-schedules'
     | '/users'
     | '/vehicles'
     | '/trips/$tripId'
@@ -189,6 +199,7 @@ export interface FileRouteTypes {
     | '/payouts'
     | '/pricing'
     | '/settings'
+    | '/trip-schedules'
     | '/users'
     | '/vehicles'
     | '/'
@@ -207,6 +218,7 @@ export interface FileRouteTypes {
     | '/_authed/payouts'
     | '/_authed/pricing'
     | '/_authed/settings'
+    | '/_authed/trip-schedules'
     | '/_authed/users'
     | '/_authed/vehicles'
     | '/_authed/'
@@ -305,6 +317,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedSettingsRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/trip-schedules': {
+      id: '/_authed/trip-schedules'
+      path: '/trip-schedules'
+      fullPath: '/trip-schedules'
+      preLoaderRoute: typeof AuthedTripSchedulesRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/users': {
       id: '/_authed/users'
       path: '/users'
@@ -346,6 +365,7 @@ interface AuthedRouteChildren {
   AuthedPayoutsRoute: typeof AuthedPayoutsRoute
   AuthedPricingRoute: typeof AuthedPricingRoute
   AuthedSettingsRoute: typeof AuthedSettingsRoute
+  AuthedTripSchedulesRoute: typeof AuthedTripSchedulesRoute
   AuthedUsersRoute: typeof AuthedUsersRoute
   AuthedVehiclesRoute: typeof AuthedVehiclesRoute
   AuthedIndexRoute: typeof AuthedIndexRoute
@@ -363,6 +383,7 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedPayoutsRoute: AuthedPayoutsRoute,
   AuthedPricingRoute: AuthedPricingRoute,
   AuthedSettingsRoute: AuthedSettingsRoute,
+  AuthedTripSchedulesRoute: AuthedTripSchedulesRoute,
   AuthedUsersRoute: AuthedUsersRoute,
   AuthedVehiclesRoute: AuthedVehiclesRoute,
   AuthedIndexRoute: AuthedIndexRoute,

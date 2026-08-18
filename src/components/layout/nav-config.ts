@@ -1,6 +1,7 @@
 import {
 	Bell,
 	CalendarClock,
+	CalendarPlus,
 	Car,
 	CreditCard,
 	LayoutDashboard,
@@ -62,6 +63,12 @@ export const navItems: NavItem[] = [
 		to: "/fleet-availability",
 		allowedRoles: OPERATIONAL_ROLES,
 		icon: CalendarClock,
+	},
+	{
+		label: "Agendamentos",
+		to: "/trip-schedules",
+		allowedRoles: OPERATIONAL_ROLES,
+		icon: CalendarPlus,
 	},
 	{
 		label: "Clientes",
