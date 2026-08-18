@@ -1,8 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Car, User } from "lucide-react";
+import { ArrowLeft, User } from "lucide-react";
 import { useState } from "react";
 import { RefreshProgressBar } from "#/components/RefreshProgressBar";
-import { AssignTripDialog } from "#/features/trips/components/AssignTripDialog";
 import { CancelTripDialog } from "#/features/trips/components/CancelTripDialog";
 import { PaymentStatusBadge } from "#/features/trips/components/PaymentStatusBadge";
 import { TripBookingTypeBadge } from "#/features/trips/components/TripBookingTypeBadge";
@@ -28,7 +27,6 @@ export function TripDetailPage({ tripId }: { tripId: string }) {
 	const navigate = useNavigate();
 	const { data: trip, isLoading, dataUpdatedAt } = useTripByIdQuery(tripId);
 	const [confirmingCancel, setConfirmingCancel] = useState(false);
-	const [assigning, setAssigning] = useState(false);
 
 	if (isLoading || !trip) {
 		return (
@@ -107,38 +105,19 @@ export function TripDetailPage({ tripId }: { tripId: string }) {
 
 			<div className="rounded-xl border border-neutral-300 p-4">
 				<h2 className="mb-3 text-[12px] font-bold tracking-[0.3px] text-neutral-600">
-					MOTORISTA E VEÍCULO
+					MOTORISTA
 				</h2>
-				{trip.driver && trip.vehicle ? (
-					<div className="flex flex-wrap gap-6">
-						<div className="flex items-center gap-2">
-							<User size={16} className="text-neutral-500" />
-							<span className="text-[14.5px] text-navy-800">
-								{trip.driver.name}
-							</span>
-						</div>
-						<div className="flex items-center gap-2">
-							<Car size={16} className="text-neutral-500" />
-							<span className="text-[14.5px] text-navy-800">
-								{trip.vehicle.plate}
-							</span>
-						</div>
+				{trip.driver ? (
+					<div className="flex items-center gap-2">
+						<User size={16} className="text-neutral-500" />
+						<span className="text-[14.5px] text-navy-800">
+							{trip.driver.name}
+						</span>
 					</div>
 				) : (
-					<div className="flex flex-wrap items-center justify-between gap-3">
-						<p className="text-[13.5px] text-neutral-600">
-							Aguardando atribuição
-						</p>
-						{trip.status === "AWAITING_ASSIGNMENT" && (
-							<button
-								type="button"
-								onClick={() => setAssigning(true)}
-								className="h-[42px] rounded-[10px] bg-gold-500 px-4 font-bold text-[14px] text-navy-800"
-							>
-								Atribuir motorista e veículo
-							</button>
-						)}
-					</div>
+					<p className="text-[13.5px] text-neutral-600">
+						Aguardando atribuição
+					</p>
 				)}
 			</div>
 
@@ -165,11 +144,6 @@ export function TripDetailPage({ tripId }: { tripId: string }) {
 				trip={trip}
 				open={confirmingCancel}
 				onOpenChange={setConfirmingCancel}
-			/>
-			<AssignTripDialog
-				trip={trip}
-				open={assigning}
-				onOpenChange={setAssigning}
 			/>
 		</div>
 	);

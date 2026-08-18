@@ -54,15 +54,10 @@ export type TripStatus = Trip["status"];
 
 export type TripsListResponse = ApiResponse<"getTrips">;
 
-export type TripAvailability = ApiResponse<"getTripsAvailability">;
-
 // Shape de referência pros schemas Zod de input — não precisa ser idêntico,
 // só consistente com o que o backend espera no body.
 export type CreateTripInput =
 	operations["postTrips"]["requestBody"]["content"]["application/json"];
-
-export type AssignTripInput =
-	operations["patchTripsByIdAssign"]["requestBody"]["content"]["application/json"];
 
 export type CancelTripInput =
 	operations["patchTripsByIdCancel"]["requestBody"]["content"]["application/json"];
