@@ -46,3 +46,39 @@ export type StaffAvailabilitySlot = Omit<
 
 export type StaffAvailabilityParams =
 	operations["getTrip-schedulesStaff-availability"]["parameters"]["query"];
+
+export type TripScheduleAvailability =
+	ApiResponse<"getTrip-schedulesAvailability">;
+
+export type TripScheduleAvailabilityParams =
+	operations["getTrip-schedulesAvailability"]["parameters"]["query"];
+
+export type CreateTripScheduleInput =
+	operations["postTrip-schedules"]["requestBody"]["content"]["application/json"];
+
+type RawCreateTripScheduleResponse = ApiResponse<"postTrip-schedules">;
+
+export type CreateTripScheduleResponse = Omit<
+	RawCreateTripScheduleResponse,
+	"scheduledAt" | "cancelledAt" | "createdAt" | "updatedAt"
+> & {
+	scheduledAt: string;
+	cancelledAt: string | null;
+	createdAt: string;
+	updatedAt: string;
+};
+
+export type UpdateTripScheduleInput =
+	operations["patchTrip-schedulesById"]["requestBody"]["content"]["application/json"];
+
+type RawUpdateTripScheduleResponse = ApiResponse<"patchTrip-schedulesById">;
+
+export type UpdateTripScheduleResponse = Omit<
+	RawUpdateTripScheduleResponse,
+	"scheduledAt" | "cancelledAt" | "createdAt" | "updatedAt"
+> & {
+	scheduledAt: string;
+	cancelledAt: string | null;
+	createdAt: string;
+	updatedAt: string;
+};

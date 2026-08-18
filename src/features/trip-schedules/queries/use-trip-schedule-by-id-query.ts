@@ -4,6 +4,7 @@ import { TripSchedulesService } from "#/features/trip-schedules/services/trip-sc
 import type {
 	ListTripSchedulesParams,
 	StaffAvailabilityParams,
+	TripScheduleAvailabilityParams,
 } from "#/features/trip-schedules/types";
 
 export const tripSchedulesQueryKeys = {
@@ -14,6 +15,8 @@ export const tripSchedulesQueryKeys = {
 		[...tripSchedulesQueryKeys.all, "detail", id] as const,
 	staffAvailability: (params: StaffAvailabilityParams) =>
 		[...tripSchedulesQueryKeys.all, "staff-availability", params] as const,
+	availability: (params: TripScheduleAvailabilityParams) =>
+		[...tripSchedulesQueryKeys.all, "availability", params] as const,
 };
 
 export function useTripScheduleByIdQuery(id: string) {
