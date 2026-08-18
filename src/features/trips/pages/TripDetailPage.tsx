@@ -1,7 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, User } from "lucide-react";
+import { ArrowLeft, Car, User } from "lucide-react";
 import { useState } from "react";
 import { RefreshProgressBar } from "#/components/RefreshProgressBar";
+import { useTripScheduleByIdQuery } from "#/features/trip-schedules/queries/use-trip-schedule-by-id-query";
 import { CancelTripDialog } from "#/features/trips/components/CancelTripDialog";
 import { PaymentStatusBadge } from "#/features/trips/components/PaymentStatusBadge";
 import { TripBookingTypeBadge } from "#/features/trips/components/TripBookingTypeBadge";
@@ -26,6 +27,9 @@ function formatScheduledAt(scheduledAt: string): string {
 export function TripDetailPage({ tripId }: { tripId: string }) {
 	const navigate = useNavigate();
 	const { data: trip, isLoading, dataUpdatedAt } = useTripByIdQuery(tripId);
+	const { data: tripSchedule } = useTripScheduleByIdQuery(
+		trip?.tripScheduleId ?? "",
+	);
 	const [confirmingCancel, setConfirmingCancel] = useState(false);
 
 	if (isLoading || !trip) {
@@ -105,14 +109,22 @@ export function TripDetailPage({ tripId }: { tripId: string }) {
 
 			<div className="rounded-xl border border-neutral-300 p-4">
 				<h2 className="mb-3 text-[12px] font-bold tracking-[0.3px] text-neutral-600">
-					MOTORISTA
+					MOTORISTA E VEÍCULO
 				</h2>
-				{trip.driver ? (
-					<div className="flex items-center gap-2">
-						<User size={16} className="text-neutral-500" />
-						<span className="text-[14.5px] text-navy-800">
-							{trip.driver.name}
-						</span>
+				{trip.driver && tripSchedule ? (
+					<div className="flex flex-wrap gap-6">
+						<div className="flex items-center gap-2">
+							<User size={16} className="text-neutral-500" />
+							<span className="text-[14.5px] text-navy-800">
+								{trip.driver.name}
+							</span>
+						</div>
+						<div className="flex items-center gap-2">
+							<Car size={16} className="text-neutral-500" />
+							<span className="text-[14.5px] text-navy-800">
+								{tripSchedule.vehicle.brand} {tripSchedule.vehicle.model}
+							</span>
+						</div>
 					</div>
 				) : (
 					<p className="text-[13.5px] text-neutral-600">

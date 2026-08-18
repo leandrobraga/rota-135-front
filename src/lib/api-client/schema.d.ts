@@ -688,46 +688,6 @@ export interface paths {
         patch: operations["patchTripsByIdConfirm-dropoff"];
         trace?: never;
     };
-    "/trips/availability": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Disponibilidade de motoristas e veículos pra um horário
-         * @description Retorna todos os motoristas aprovados e ativos e todos os veículos ativos, cada um marcado como disponível ou não pra `scheduledAt`, considerando a janela de conflito configurada em TripSettings.
-         */
-        get: operations["getTripsAvailability"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/trips/{id}/assign": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Atribui motorista e veículo à corrida
-         * @description Só permitido em corrida já paga. Valida que o motorista está aprovado, o veículo está ativo, e que nenhum dos dois já está escalado em outra corrida próxima (janela de 12h). Ao atribuir, cria automaticamente o repasse (Payout) travado (LOCKED) pro motorista.
-         */
-        patch: operations["patchTripsByIdAssign"];
-        trace?: never;
-    };
     "/trips/{id}/driver-arrived-pickup": {
         parameters: {
             query?: never;
@@ -826,6 +786,134 @@ export interface paths {
          * @description Permite ao motorista concluir a corrida sem confirmação explícita do cliente, disponível só após um tempo mínimo decorrido da chegada ao ponto de desembarque. Transiciona a corrida para COMPLETED e libera o repasse ao motorista.
          */
         patch: operations["patchTripsByIdSkip-dropoff-confirmation"];
+        trace?: never;
+    };
+    "/trip-schedules/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lista horários fixos de viagem
+         * @description Lista paginada de TripSchedule, com veículo e motorista completos (não só o ID). Aceita filtro opcional por `status`, `direction` e `date` (dia exato).
+         */
+        get: operations["getTrip-schedules"];
+        put?: never;
+        /**
+         * Cria um horário fixo de viagem
+         * @description Cria um TripSchedule (horário fixo de viagem entre MOC e BH), validando que o veículo está ativo, o motorista está aprovado, e que nenhum dos dois já está escalado em outro horário próximo (considerando a janela de conflito configurada em TripSettings).
+         */
+        post: operations["postTrip-schedules"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trip-schedules/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Busca um horário fixo de viagem por id
+         * @description Retorna os dados completos de um TripSchedule específico, com veículo e motorista completos (não só o ID).
+         */
+        get: operations["getTrip-schedulesById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Atualiza veículo e/ou motorista de um horário fixo
+         * @description Atualiza `vehicleId` e/ou `driverId` de um TripSchedule ACTIVE. `scheduledAt` e `direction` são imutáveis após a criação. Valida ativo/aprovação e conflito de agenda do novo veículo/motorista, e que o novo veículo comporta as vagas já ocupadas por Trips ativas neste agendamento.
+         */
+        patch: operations["patchTrip-schedulesById"];
+        trace?: never;
+    };
+    "/trip-schedules/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Disponibilidade de motoristas e veículos pra um horário
+         * @description Retorna todos os motoristas aprovados e ativos e todos os veículos ativos, cada um marcado como disponível ou não pra `scheduledAt`, considerando a janela de conflito configurada em TripSettings e os TripSchedule ACTIVE já existentes.
+         */
+        get: operations["getTrip-schedulesAvailability"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trip-schedules/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancela um horário fixo de viagem em cascata
+         * @description Cancela o TripSchedule e todas as Trips ativas vinculadas a ele. Se qualquer Trip estiver em andamento (não puder transicionar para CANCELLED), a operação inteira é rejeitada, sem cancelar nada. Trips já COMPLETED são ignoradas. Reembolsos seguem o mesmo tratamento de falha do cancelamento individual.
+         */
+        post: operations["postTrip-schedulesByIdCancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trip-schedules/staff-availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Disponibilidade de horários pro backoffice
+         * @description Mesma informação de /customer-availability (schedule, preço, vagas), disponível pra Admin/Operador montar corrida em nome de um cliente.
+         */
+        get: operations["getTrip-schedulesStaff-availability"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trip-schedules/customer-availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Disponibilidade de horários pro cliente
+         * @description Retorna os TripSchedule ACTIVE de uma data e direção, com preço de assento e de carro inteiro, vagas disponíveis e se o carro inteiro está livre. Não retorna horários já passados, mesmo no dia de hoje.
+         */
+        get: operations["getTrip-schedulesCustomer-availability"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/payment-settings/": {
@@ -2682,11 +2770,7 @@ export interface operations {
                                     id: string;
                                     name: string;
                                 } | null;
-                                vehicleId: string | null;
-                                vehicle: {
-                                    id: string;
-                                    plate: string;
-                                } | null;
+                                tripScheduleId: string;
                                 /** @enum {string} */
                                 occupancyType: "SEAT" | "FULL_CAR";
                                 price: unknown;
@@ -2733,9 +2817,7 @@ export interface operations {
                     occupancyType: "SEAT" | "FULL_CAR";
                     pickupAddress: string;
                     dropoffAddress: string;
-                    /** Format: date-time */
-                    scheduledAt: string;
-                    vehicleId: string;
+                    tripScheduleId: string;
                     clientId?: string;
                     creditIds?: string[];
                 };
@@ -2744,9 +2826,7 @@ export interface operations {
                     occupancyType: "SEAT" | "FULL_CAR";
                     pickupAddress: string;
                     dropoffAddress: string;
-                    /** Format: date-time */
-                    scheduledAt: string;
-                    vehicleId: string;
+                    tripScheduleId: string;
                     clientId?: string;
                     creditIds?: string[];
                 };
@@ -2755,9 +2835,7 @@ export interface operations {
                     occupancyType: "SEAT" | "FULL_CAR";
                     pickupAddress: string;
                     dropoffAddress: string;
-                    /** Format: date-time */
-                    scheduledAt: string;
-                    vehicleId: string;
+                    tripScheduleId: string;
                     clientId?: string;
                     creditIds?: string[];
                 };
@@ -2784,11 +2862,7 @@ export interface operations {
                                     id: string;
                                     name: string;
                                 } | null;
-                                vehicleId: string | null;
-                                vehicle: {
-                                    id: string;
-                                    plate: string;
-                                } | null;
+                                tripScheduleId: string;
                                 /** @enum {string} */
                                 occupancyType: "SEAT" | "FULL_CAR";
                                 price: unknown;
@@ -2860,11 +2934,7 @@ export interface operations {
                                 id: string;
                                 name: string;
                             } | null;
-                            vehicleId: string | null;
-                            vehicle: {
-                                id: string;
-                                plate: string;
-                            } | null;
+                            tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -2967,11 +3037,7 @@ export interface operations {
                                 id: string;
                                 name: string;
                             } | null;
-                            vehicleId: string | null;
-                            vehicle: {
-                                id: string;
-                                plate: string;
-                            } | null;
+                            tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3030,11 +3096,7 @@ export interface operations {
                                 id: string;
                                 name: string;
                             } | null;
-                            vehicleId: string | null;
-                            vehicle: {
-                                id: string;
-                                plate: string;
-                            } | null;
+                            tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3093,11 +3155,7 @@ export interface operations {
                                 id: string;
                                 name: string;
                             } | null;
-                            vehicleId: string | null;
-                            vehicle: {
-                                id: string;
-                                plate: string;
-                            } | null;
+                            tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3156,127 +3214,7 @@ export interface operations {
                                 id: string;
                                 name: string;
                             } | null;
-                            vehicleId: string | null;
-                            vehicle: {
-                                id: string;
-                                plate: string;
-                            } | null;
-                            /** @enum {string} */
-                            occupancyType: "SEAT" | "FULL_CAR";
-                            price: unknown;
-                            pickupAddress: string;
-                            dropoffAddress: string;
-                            scheduledAt: unknown;
-                            /** @enum {string} */
-                            bookingType: "NORMAL" | "URGENT";
-                            /** @enum {string} */
-                            status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
-                            cancelledAt: unknown | null;
-                            refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
-                            noShowBy: ("CLIENT" | "DRIVER") | null;
-                            reminderSentAt: unknown | null;
-                            payment: {
-                                /** @enum {string} */
-                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
-                                /** @enum {string} */
-                                method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
-                            } | null;
-                            createdAt: unknown;
-                            updatedAt: unknown;
-                        };
-                    };
-                };
-            };
-        };
-    };
-    getTripsAvailability: {
-        parameters: {
-            query: {
-                scheduledAt: string;
-                excludeTripId?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Response for status 200 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        data: {
-                            drivers: {
-                                id: string;
-                                name: string;
-                                available: boolean;
-                            }[];
-                            vehicles: {
-                                id: string;
-                                plate: string;
-                                brand: string;
-                                model: string;
-                                available: boolean;
-                            }[];
-                        };
-                    };
-                };
-            };
-        };
-    };
-    patchTripsByIdAssign: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    driverId: string;
-                    vehicleId?: string;
-                };
-                "application/x-www-form-urlencoded": {
-                    driverId: string;
-                    vehicleId?: string;
-                };
-                "multipart/form-data": {
-                    driverId: string;
-                    vehicleId?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Response for status 200 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        data: {
-                            id: string;
-                            clientId: string;
-                            client: {
-                                id: string;
-                                name: string;
-                            };
-                            driverId: string | null;
-                            driver: {
-                                id: string;
-                                name: string;
-                            } | null;
-                            vehicleId: string | null;
-                            vehicle: {
-                                id: string;
-                                plate: string;
-                            } | null;
+                            tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3335,11 +3273,7 @@ export interface operations {
                                 id: string;
                                 name: string;
                             } | null;
-                            vehicleId: string | null;
-                            vehicle: {
-                                id: string;
-                                plate: string;
-                            } | null;
+                            tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3398,11 +3332,7 @@ export interface operations {
                                 id: string;
                                 name: string;
                             } | null;
-                            vehicleId: string | null;
-                            vehicle: {
-                                id: string;
-                                plate: string;
-                            } | null;
+                            tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3461,11 +3391,7 @@ export interface operations {
                                 id: string;
                                 name: string;
                             } | null;
-                            vehicleId: string | null;
-                            vehicle: {
-                                id: string;
-                                plate: string;
-                            } | null;
+                            tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3524,11 +3450,7 @@ export interface operations {
                                 id: string;
                                 name: string;
                             } | null;
-                            vehicleId: string | null;
-                            vehicle: {
-                                id: string;
-                                plate: string;
-                            } | null;
+                            tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3587,11 +3509,7 @@ export interface operations {
                                 id: string;
                                 name: string;
                             } | null;
-                            vehicleId: string | null;
-                            vehicle: {
-                                id: string;
-                                plate: string;
-                            } | null;
+                            tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
                             price: unknown;
@@ -3615,6 +3533,348 @@ export interface operations {
                             createdAt: unknown;
                             updatedAt: unknown;
                         };
+                    };
+                };
+            };
+        };
+    };
+    "getTrip-schedules": {
+        parameters: {
+            query?: {
+                status?: "ACTIVE" | "CANCELLED";
+                direction?: "MOC_TO_BH" | "BH_TO_MOC";
+                date?: string;
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            data: {
+                                id: string;
+                                /** @enum {string} */
+                                direction: "MOC_TO_BH" | "BH_TO_MOC";
+                                scheduledAt: unknown;
+                                /** @enum {string} */
+                                status: "ACTIVE" | "CANCELLED";
+                                cancelledAt: unknown | null;
+                                vehicle: {
+                                    id: string;
+                                    plate: string;
+                                    brand: string;
+                                    model: string;
+                                };
+                                driver: {
+                                    id: string;
+                                    name: string;
+                                };
+                                createdAt: unknown;
+                                updatedAt: unknown;
+                            }[];
+                            page: number;
+                            pageSize: number;
+                            total: number;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    "postTrip-schedules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    direction: "MOC_TO_BH" | "BH_TO_MOC";
+                    /** Format: date-time */
+                    scheduledAt: string;
+                    vehicleId: string;
+                    driverId: string;
+                };
+                "application/x-www-form-urlencoded": {
+                    /** @enum {string} */
+                    direction: "MOC_TO_BH" | "BH_TO_MOC";
+                    /** Format: date-time */
+                    scheduledAt: string;
+                    vehicleId: string;
+                    driverId: string;
+                };
+                "multipart/form-data": {
+                    /** @enum {string} */
+                    direction: "MOC_TO_BH" | "BH_TO_MOC";
+                    /** Format: date-time */
+                    scheduledAt: string;
+                    vehicleId: string;
+                    driverId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            /** @enum {string} */
+                            direction: "MOC_TO_BH" | "BH_TO_MOC";
+                            scheduledAt: unknown;
+                            vehicleId: string;
+                            driverId: string;
+                            /** @enum {string} */
+                            status: "ACTIVE" | "CANCELLED";
+                            cancelledAt: unknown | null;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    "getTrip-schedulesById": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            /** @enum {string} */
+                            direction: "MOC_TO_BH" | "BH_TO_MOC";
+                            scheduledAt: unknown;
+                            /** @enum {string} */
+                            status: "ACTIVE" | "CANCELLED";
+                            cancelledAt: unknown | null;
+                            vehicle: {
+                                id: string;
+                                plate: string;
+                                brand: string;
+                                model: string;
+                            };
+                            driver: {
+                                id: string;
+                                name: string;
+                            };
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    "patchTrip-schedulesById": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    vehicleId?: string;
+                    driverId?: string;
+                };
+                "application/x-www-form-urlencoded": {
+                    vehicleId?: string;
+                    driverId?: string;
+                };
+                "multipart/form-data": {
+                    vehicleId?: string;
+                    driverId?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            /** @enum {string} */
+                            direction: "MOC_TO_BH" | "BH_TO_MOC";
+                            scheduledAt: unknown;
+                            vehicleId: string;
+                            driverId: string;
+                            /** @enum {string} */
+                            status: "ACTIVE" | "CANCELLED";
+                            cancelledAt: unknown | null;
+                            createdAt: unknown;
+                            updatedAt: unknown;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    "getTrip-schedulesAvailability": {
+        parameters: {
+            query: {
+                scheduledAt: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            drivers: {
+                                id: string;
+                                name: string;
+                                available: boolean;
+                            }[];
+                            vehicles: {
+                                id: string;
+                                plate: string;
+                                brand: string;
+                                model: string;
+                                available: boolean;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+    };
+    "postTrip-schedulesByIdCancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: null;
+                    };
+                };
+            };
+        };
+    };
+    "getTrip-schedulesStaff-availability": {
+        parameters: {
+            query: {
+                date: string;
+                direction: "MOC_TO_BH" | "BH_TO_MOC";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            scheduledAt: unknown;
+                            vehicle: {
+                                brand: string;
+                                model: string;
+                            };
+                            seatPrice: unknown;
+                            fullCarPrice: unknown;
+                            availableSeats: number;
+                            isFullCarAvailable: boolean;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    "getTrip-schedulesCustomer-availability": {
+        parameters: {
+            query: {
+                date: string;
+                direction: "MOC_TO_BH" | "BH_TO_MOC";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response for status 200 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            id: string;
+                            scheduledAt: unknown;
+                            vehicle: {
+                                brand: string;
+                                model: string;
+                            };
+                            seatPrice: unknown;
+                            fullCarPrice: unknown;
+                            availableSeats: number;
+                            isFullCarAvailable: boolean;
+                        }[];
                     };
                 };
             };
