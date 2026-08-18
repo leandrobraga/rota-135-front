@@ -30,6 +30,15 @@ const DIRECTION_LABELS: Record<"MOC_TO_BH" | "BH_TO_MOC", string> = {
 	BH_TO_MOC: "Belo Horizonte → Montes Claros",
 };
 
+// new Date(datetimeLocal).toISOString() reinterpreta o valor digitado no
+// fuso do browser antes de converter pra UTC — se o operador digita
+// 20/08 22:00 e o browser não está em UTC-3, a data desloca (bateu bug
+// real: agendamento sumia do dia certo). O valor de datetime-local já é
+// a data/hora pretendida — só anexamos o offset fixo de Brasília.
+function datetimeLocalToIso(datetimeLocal: string): string {
+	return `${datetimeLocal}:00.000-03:00`;
+}
+
 function formatScheduledAtReadOnly(scheduledAt: string): string {
 	return new Date(scheduledAt).toLocaleString("pt-BR", {
 		day: "2-digit",
@@ -119,7 +128,7 @@ function CreateTripScheduleForm({
 
 	const scheduledAt = watch("scheduledAt");
 
-	const scheduledAtIso = scheduledAt ? new Date(scheduledAt).toISOString() : "";
+	const scheduledAtIso = scheduledAt ? datetimeLocalToIso(scheduledAt) : "";
 	const { data: availability, isLoading: isLoadingAvailability } =
 		useTripScheduleAvailabilityQuery({ scheduledAt: scheduledAtIso });
 
@@ -127,7 +136,7 @@ function CreateTripScheduleForm({
 		try {
 			await createMutation.mutateAsync({
 				...values,
-				scheduledAt: new Date(values.scheduledAt).toISOString(),
+				scheduledAt: datetimeLocalToIso(values.scheduledAt),
 			});
 			reset();
 			onOpenChange(false);
