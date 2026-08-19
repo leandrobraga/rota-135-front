@@ -6,6 +6,7 @@ const PAYMENT_STATUS_STYLE: Record<Payment["status"], string> = {
 	PENDING: "bg-gold-500 text-white",
 	PAID: "",
 	FAILED: "bg-[#F1E6CC] text-[#9C4A3E]",
+	EXPIRED: "bg-[#F1E6CC] text-[#9C4A3E]",
 	REFUNDED: "bg-[#F1E6CC] text-[#9C4A3E]",
 	PARTIALLY_REFUNDED: "bg-[#F1E6CC] text-[#9C4A3E]",
 };
@@ -14,6 +15,7 @@ const PAYMENT_STATUS_LABEL: Record<Payment["status"], string> = {
 	PENDING: "Pagamento pendente",
 	PAID: "",
 	FAILED: "Pagamento falhou",
+	EXPIRED: "Pagamento expirado",
 	REFUNDED: "Reembolsado",
 	PARTIALLY_REFUNDED: "Parcialmente reembolsado",
 };

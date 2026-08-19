@@ -12,7 +12,7 @@ const PAGE_SIZE = 20;
 
 const STATUS_FILTER_OPTIONS: { value: TripStatus | ""; label: string }[] = [
 	{ value: "", label: "Todos" },
-	{ value: "AWAITING_ASSIGNMENT", label: "Aguardando atribuição" },
+	{ value: "AWAITING_PAYMENT", label: "Aguardando pagamento" },
 	{ value: "SCHEDULED", label: "Agendada" },
 	{ value: "AWAITING_BOARDING", label: "Aguardando embarque" },
 	{ value: "IN_PROGRESS", label: "Em andamento" },

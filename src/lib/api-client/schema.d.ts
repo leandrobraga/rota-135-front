@@ -821,7 +821,7 @@ export interface paths {
         };
         /**
          * Busca um horário fixo de viagem por id
-         * @description Retorna os dados completos de um TripSchedule específico, com veículo e motorista completos (não só o ID).
+         * @description Retorna os dados completos de um TripSchedule específico, com veículo e motorista completos (não só o ID). Cliente também pode ver o TripSchedule que selecionou (tela de Checkout).
          */
         get: operations["getTrip-schedulesById"];
         put?: never;
@@ -2738,7 +2738,7 @@ export interface operations {
         parameters: {
             query?: {
                 search?: string;
-                status?: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                status?: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                 page?: number;
                 pageSize?: number;
                 from?: string;
@@ -2765,11 +2765,6 @@ export interface operations {
                                     id: string;
                                     name: string;
                                 };
-                                driverId: string | null;
-                                driver: {
-                                    id: string;
-                                    name: string;
-                                } | null;
                                 tripScheduleId: string;
                                 /** @enum {string} */
                                 occupancyType: "SEAT" | "FULL_CAR";
@@ -2780,14 +2775,14 @@ export interface operations {
                                 /** @enum {string} */
                                 bookingType: "NORMAL" | "URGENT";
                                 /** @enum {string} */
-                                status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                                status: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                                 cancelledAt: unknown | null;
                                 refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                                 noShowBy: ("CLIENT" | "DRIVER") | null;
                                 reminderSentAt: unknown | null;
                                 payment: {
                                     /** @enum {string} */
-                                    status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                    status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                     /** @enum {string} */
                                     method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                                 } | null;
@@ -2857,11 +2852,6 @@ export interface operations {
                                     id: string;
                                     name: string;
                                 };
-                                driverId: string | null;
-                                driver: {
-                                    id: string;
-                                    name: string;
-                                } | null;
                                 tripScheduleId: string;
                                 /** @enum {string} */
                                 occupancyType: "SEAT" | "FULL_CAR";
@@ -2872,14 +2862,14 @@ export interface operations {
                                 /** @enum {string} */
                                 bookingType: "NORMAL" | "URGENT";
                                 /** @enum {string} */
-                                status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                                status: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                                 cancelledAt: unknown | null;
                                 refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                                 noShowBy: ("CLIENT" | "DRIVER") | null;
                                 reminderSentAt: unknown | null;
                                 payment: {
                                     /** @enum {string} */
-                                    status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                    status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                     /** @enum {string} */
                                     method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                                 } | null;
@@ -2929,11 +2919,6 @@ export interface operations {
                                 id: string;
                                 name: string;
                             };
-                            driverId: string | null;
-                            driver: {
-                                id: string;
-                                name: string;
-                            } | null;
                             tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
@@ -2944,14 +2929,14 @@ export interface operations {
                             /** @enum {string} */
                             bookingType: "NORMAL" | "URGENT";
                             /** @enum {string} */
-                            status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                            status: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                             cancelledAt: unknown | null;
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
                             payment: {
                                 /** @enum {string} */
-                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
                                 method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
@@ -3032,11 +3017,6 @@ export interface operations {
                                 id: string;
                                 name: string;
                             };
-                            driverId: string | null;
-                            driver: {
-                                id: string;
-                                name: string;
-                            } | null;
                             tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
@@ -3047,14 +3027,14 @@ export interface operations {
                             /** @enum {string} */
                             bookingType: "NORMAL" | "URGENT";
                             /** @enum {string} */
-                            status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                            status: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                             cancelledAt: unknown | null;
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
                             payment: {
                                 /** @enum {string} */
-                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
                                 method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
@@ -3091,11 +3071,6 @@ export interface operations {
                                 id: string;
                                 name: string;
                             };
-                            driverId: string | null;
-                            driver: {
-                                id: string;
-                                name: string;
-                            } | null;
                             tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
@@ -3106,14 +3081,14 @@ export interface operations {
                             /** @enum {string} */
                             bookingType: "NORMAL" | "URGENT";
                             /** @enum {string} */
-                            status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                            status: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                             cancelledAt: unknown | null;
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
                             payment: {
                                 /** @enum {string} */
-                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
                                 method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
@@ -3150,11 +3125,6 @@ export interface operations {
                                 id: string;
                                 name: string;
                             };
-                            driverId: string | null;
-                            driver: {
-                                id: string;
-                                name: string;
-                            } | null;
                             tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
@@ -3165,14 +3135,14 @@ export interface operations {
                             /** @enum {string} */
                             bookingType: "NORMAL" | "URGENT";
                             /** @enum {string} */
-                            status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                            status: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                             cancelledAt: unknown | null;
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
                             payment: {
                                 /** @enum {string} */
-                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
                                 method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
@@ -3209,11 +3179,6 @@ export interface operations {
                                 id: string;
                                 name: string;
                             };
-                            driverId: string | null;
-                            driver: {
-                                id: string;
-                                name: string;
-                            } | null;
                             tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
@@ -3224,14 +3189,14 @@ export interface operations {
                             /** @enum {string} */
                             bookingType: "NORMAL" | "URGENT";
                             /** @enum {string} */
-                            status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                            status: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                             cancelledAt: unknown | null;
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
                             payment: {
                                 /** @enum {string} */
-                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
                                 method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
@@ -3268,11 +3233,6 @@ export interface operations {
                                 id: string;
                                 name: string;
                             };
-                            driverId: string | null;
-                            driver: {
-                                id: string;
-                                name: string;
-                            } | null;
                             tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
@@ -3283,14 +3243,14 @@ export interface operations {
                             /** @enum {string} */
                             bookingType: "NORMAL" | "URGENT";
                             /** @enum {string} */
-                            status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                            status: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                             cancelledAt: unknown | null;
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
                             payment: {
                                 /** @enum {string} */
-                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
                                 method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
@@ -3327,11 +3287,6 @@ export interface operations {
                                 id: string;
                                 name: string;
                             };
-                            driverId: string | null;
-                            driver: {
-                                id: string;
-                                name: string;
-                            } | null;
                             tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
@@ -3342,14 +3297,14 @@ export interface operations {
                             /** @enum {string} */
                             bookingType: "NORMAL" | "URGENT";
                             /** @enum {string} */
-                            status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                            status: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                             cancelledAt: unknown | null;
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
                             payment: {
                                 /** @enum {string} */
-                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
                                 method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
@@ -3386,11 +3341,6 @@ export interface operations {
                                 id: string;
                                 name: string;
                             };
-                            driverId: string | null;
-                            driver: {
-                                id: string;
-                                name: string;
-                            } | null;
                             tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
@@ -3401,14 +3351,14 @@ export interface operations {
                             /** @enum {string} */
                             bookingType: "NORMAL" | "URGENT";
                             /** @enum {string} */
-                            status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                            status: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                             cancelledAt: unknown | null;
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
                             payment: {
                                 /** @enum {string} */
-                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
                                 method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
@@ -3445,11 +3395,6 @@ export interface operations {
                                 id: string;
                                 name: string;
                             };
-                            driverId: string | null;
-                            driver: {
-                                id: string;
-                                name: string;
-                            } | null;
                             tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
@@ -3460,14 +3405,14 @@ export interface operations {
                             /** @enum {string} */
                             bookingType: "NORMAL" | "URGENT";
                             /** @enum {string} */
-                            status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                            status: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                             cancelledAt: unknown | null;
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
                             payment: {
                                 /** @enum {string} */
-                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
                                 method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
@@ -3504,11 +3449,6 @@ export interface operations {
                                 id: string;
                                 name: string;
                             };
-                            driverId: string | null;
-                            driver: {
-                                id: string;
-                                name: string;
-                            } | null;
                             tripScheduleId: string;
                             /** @enum {string} */
                             occupancyType: "SEAT" | "FULL_CAR";
@@ -3519,14 +3459,14 @@ export interface operations {
                             /** @enum {string} */
                             bookingType: "NORMAL" | "URGENT";
                             /** @enum {string} */
-                            status: "AWAITING_ASSIGNMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
+                            status: "AWAITING_PAYMENT" | "SCHEDULED" | "AWAITING_BOARDING" | "IN_PROGRESS" | "AWAITING_DROPOFF" | "COMPLETED" | "CANCELLED";
                             cancelledAt: unknown | null;
                             refundType: ("FULL" | "PARTIAL" | "CREDIT" | "NONE") | null;
                             noShowBy: ("CLIENT" | "DRIVER") | null;
                             reminderSentAt: unknown | null;
                             payment: {
                                 /** @enum {string} */
-                                status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                                status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                                 /** @enum {string} */
                                 method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             } | null;
@@ -4022,7 +3962,7 @@ export interface operations {
                             /** @enum {string} */
                             method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             /** @enum {string} */
-                            status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                            status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                             amount: unknown;
                             gatewayReference: string | null;
                             paidAt: unknown | null;
@@ -4064,7 +4004,7 @@ export interface operations {
                             /** @enum {string} */
                             method: "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CREDIT";
                             /** @enum {string} */
-                            status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                            status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "REFUNDED" | "PARTIALLY_REFUNDED";
                             amount: unknown;
                             gatewayReference: string | null;
                             paidAt: unknown | null;
@@ -4328,7 +4268,7 @@ export interface operations {
                             data: {
                                 id: string;
                                 /** @enum {string} */
-                                type: "NEW_TRIP_AWAITING_ASSIGNMENT" | "TRIP_CANCELLED" | "REFUND_FAILED";
+                                type: "NEW_TRIP_CREATED" | "TRIP_CANCELLED" | "REFUND_FAILED";
                                 message: string;
                                 tripId: string | null;
                                 read: boolean;
@@ -4364,7 +4304,7 @@ export interface operations {
                         data: {
                             id: string;
                             /** @enum {string} */
-                            type: "NEW_TRIP_AWAITING_ASSIGNMENT" | "TRIP_CANCELLED" | "REFUND_FAILED";
+                            type: "NEW_TRIP_CREATED" | "TRIP_CANCELLED" | "REFUND_FAILED";
                             message: string;
                             tripId: string | null;
                             read: boolean;

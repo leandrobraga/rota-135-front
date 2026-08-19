@@ -3,7 +3,7 @@ import type { TripStatus } from "#/features/trips/types";
 const TRIP_STATUS_STYLE: Record<TripStatus, string> = {
 	// Dourado = precisa de ação do backoffice. Preenchido = mais urgente
 	// (motorista/veículo ainda faltam) vs. outline (só falta embarcar).
-	AWAITING_ASSIGNMENT: "bg-gold-500 text-white px-2.5 py-1",
+	AWAITING_PAYMENT: "bg-gold-500 text-white px-2.5 py-1",
 	AWAITING_BOARDING:
 		"border-[1.5px] border-gold-500 text-gold-500 px-[9px] py-[3px]",
 	// Neutro = estado de espera sem ação pendente.
@@ -17,7 +17,7 @@ const TRIP_STATUS_STYLE: Record<TripStatus, string> = {
 };
 
 const TRIP_STATUS_LABEL: Record<TripStatus, string> = {
-	AWAITING_ASSIGNMENT: "Aguardando atribuição",
+	AWAITING_PAYMENT: "Aguardando pagamento",
 	SCHEDULED: "Agendada",
 	AWAITING_BOARDING: "Aguardando embarque",
 	IN_PROGRESS: "Em andamento",
